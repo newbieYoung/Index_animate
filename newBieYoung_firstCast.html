@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<script src="./jquery-1.7.1.js"></script>
+<script src="./LiyArrayUtil.js"></script>
+<script src="./LiyDateUtil.js"></script>
+<script type="text/javascript">
+//点类
+function PointClass(x,y){
+	this.x=x;
+	this.y=y;
+}
+//背景音乐类
+function BackgroundMusic(){
+	this.items = new Array();
+	this.nowIndex = -1;
+	//加载歌曲
+	this.loadMusic = function(music){
+		this.items.push(music);
+	}
+	//循环播放
+	this.play = function(){
+		if(this.items.length>0){
+			if(this.nowIndex == -1||(this.nowIndex == this.items.length&&this.items[this.nowIndex].paused)){
+				this.items[0].play();
+				this.nowIndex = 0;
+			}
+			//doing......
+		}
+	}
+}
+//全局变量
+var IndexCanvas;//舞台画布
+var IndexContext;//舞台上下文
+var Cursor=0;//游标
+var Times=1;//速率
+var FirstCastData;//第一幕数据
+var SecondCastData;//第二幕数据
+var ThreeCastData;//第三幕数据
+var FirstToSecoundCastData = new Array();//第一幕和第二幕切换时展现的数据
+var SecondToThreeCastData = new Array();//第二幕和第三幕切换时展现的数据
+var TempClearData = new Array();//存储缓存数据
+var TempShowData = new Array();
+var RectOne;//矩形选取框one
+var RectTwo;//矩形选取框two
+var RectThree;//矩形选取框three
+var RectFour;//矩形选取框four
+var RectFive;//矩形选取框five
+var DynamicOne;//动态交互数据one
+var DynamicTwo;//动态交互数据two
+var DynamicThree;//动态交互数据three
+var DynamicFour;//动态交互数据four
+var OtherString;//用于初始化DynamicFour
+var MouseMoveCastData = new Array();//鼠标移动产生的交互事件展现的数据
+var TotalDynamicCastData = new Array();//交互的最终显示数据
+var Interval;//重复执行器
+var Point = {"x":-1,"y":-1};//鼠标移动时的当前坐标
+var LineWidth = 1;//线条宽度
+var PartNo = 0;//顺时针旋转切换时的状态（第二幕向第三幕切换）
+var RectWidth = 75;//凸显框的宽度
+var RectHeight = 65;//凸显框的高度
+
+var ClearRectSize = 50;//随机混乱切入的矩形宽度和高度
+var OnceClearRectNum = 50 ;//一次随机矩形的数量
+var DeviationNum = 2 ;//混乱随机切换时允许残留的数据误差（第二幕向第三幕切换）
+
+var BackGroundMusic = new Array();//存放背景音乐的数组
+var NowMusic = -1;//当前正在播放的是第几首背景歌曲
+var TipTexts = ["Accidents will happen.","Do nothing by halves.","Do it now.","Creep before you walk.","Business is business.","Business is the salt of life."];//待办事项
+var TipIndex = 0;
+var TipTimes = 10;//待办事项的延迟变化频率
+
+$(window).ready(function(){
+	IndexCanvas=document.querySelector('#IndexCanvas');
+	IndexContext=IndexCanvas.getContext('2d');
+	getCastData();
+	Interval = setInterval(drawPoint,Times);
+	dealMousePoint();
+	
+});
+
+//处理鼠标交互
+function dealMousePoint(){
+	//鼠标移动
+	$("#IndexCanvas").mousemove(function(e){   
+		Point.x=e.clientX-e.target.offsetLeft;
+		Point.y=e.clientY-e.target.offsetTop;
+		$("#pointXy").text(Point.x+" "+Point.y);
+		if(MouseMoveCastData.length>0){//当第二幕和第三幕切换完成之后，开始交互展现
+		
+			//console.log(Point.x+" "+Point.y);
+			//console.log(RectOne[0].x+" "+RectOne[0].y);
+			//console.log(RectTwo[0].x+" "+RectTwo[0].y);
+			//console.log(RectThree[0].x+" "+RectThree[0].y);
+			
+			if(Point.x>=RectOne[0].x&&Point.x<=RectOne[0].x+RectWidth&&Point.y>=RectOne[0].y&&Point.y<=RectOne[0].y+RectHeight){
+				for(var i=0;i<RectOne.length;i++){
+					MouseMoveCastData.push(RectOne[i]);
+				}
+			}else if(Point.x>=RectTwo[0].x&&Point.x<=RectTwo[0].x+RectWidth&&Point.y>=RectTwo[0].y&&Point.y<=RectTwo[0].y+RectHeight){
+				for(var i=0;i<RectTwo.length;i++){
+					MouseMoveCastData.push(RectTwo[i]);
+				}
+			}else if(Point.x>=RectThree[0].x&&Point.x<=RectThree[0].x+RectWidth&&Point.y>=RectThree[0].y&&Point.y<=RectThree[0].y+RectHeight){
+				for(var i=0;i<RectThree.length;i++){
+					MouseMoveCastData.push(RectThree[i]);
+				}
+			}else if(Point.x>=RectFour[0].x&&Point.x<=RectFour[0].x+RectWidth&&Point.y>=RectFour[0].y&&Point.y<=RectFour[0].y+RectHeight){
+				for(var i=0;i<RectFour.length;i++){
+					MouseMoveCastData.push(RectFour[i]);
+				}
+			}else if(Point.x>=RectFive[0].x&&Point.x<=RectFive[0].x+RectWidth&&Point.y>=RectFive[0].y&&Point.y<=RectFive[0].y+RectHeight){
+				for(var i=0;i<RectFive.length;i++){
+					MouseMoveCastData.push(RectFive[i]);
+				}
+			}else{
+				//还原
+				MouseMoveCastData = new Array();
+				for(var i=0;i<ThreeCastData.length;i++){
+					MouseMoveCastData.push(ThreeCastData[i]);
+				}
+			}
+		}
+	});
+	//鼠标点击(跳转到相应子界面)
+	$("#IndexCanvas").mousedown(function(e){   
+		Point.x=e.clientX-e.target.offsetLeft;
+		Point.y=e.clientY-e.target.offsetTop;
+		if(MouseMoveCastData.length>0){
+		
+			//console.log(Point.x+" "+Point.y);
+			//console.log(RectOne[0].x+" "+RectOne[0].y);
+			//console.log(RectTwo[0].x+" "+RectTwo[0].y);
+			//console.log(RectThree[0].x+" "+RectThree[0].y);
+			//console.log(RectFour[0].x+" "+RectFour[0].y);
+			//console.log(RectFive[0].x+" "+RectFive[0].y);
+			
+			if(Point.x>=RectOne[0].x&&Point.x<=RectOne[0].x+RectWidth&&Point.y>=RectOne[0].y&&Point.y<=RectOne[0].y+RectHeight){
+				
+			}else if(Point.x>=RectTwo[0].x&&Point.x<=RectTwo[0].x+RectWidth&&Point.y>=RectTwo[0].y&&Point.y<=RectTwo[0].y+RectHeight){
+				
+			}else if(Point.x>=RectThree[0].x&&Point.x<=RectThree[0].x+RectWidth&&Point.y>=RectThree[0].y&&Point.y<=RectThree[0].y+RectHeight){
+				
+			}else if(Point.x>=RectFour[0].x&&Point.x<=RectFour[0].x+RectWidth&&Point.y>=RectFour[0].y&&Point.y<=RectFour[0].y+RectHeight){
+				
+			}else if(Point.x>=RectFive[0].x&&Point.x<=RectFive[0].x+RectWidth&&Point.y>=RectFive[0].y&&Point.y<=RectFive[0].y+RectHeight){
+				
+			}else{
+				//donothing;
+			}
+		}
+	});
+}
+
+//获得数据
+function getCastData(){
+	//第一幕数据
+	var cookieBuffer="";
+	/* 客户端存储使用cookie技术
+	//由于cookie是分段存放的，所以这里要分段读取，然后再拼接
+	var index=1;
+	while(getCookie('firstCast'+index)){
+		cookieBuffer+=getCookie('firstCast'+index);
+		index++;
+	}
+	*/
+	/*客户端存储使用html5的stroage技术*/
+	var index=1;
+	while(window.localStorage.getItem('firstCast'+index)){
+		cookieBuffer+=window.localStorage.getItem('firstCast'+index);
+		index++;
+	}
+	FirstCastData=JSON.parse(cookieBuffer); 
+	//第二幕数据
+	cookieBuffer = "";
+	index=1;
+	while(window.localStorage.getItem('secoundCast'+index)){
+		cookieBuffer+=window.localStorage.getItem('secoundCast'+index);
+		index++;
+	}
+	SecondCastData=JSON.parse(cookieBuffer);
+	//第三幕数据
+	cookieBuffer = "";
+	index=1;
+	while(window.localStorage.getItem('threeCast'+index)){
+		cookieBuffer+=window.localStorage.getItem('threeCast'+index);
+		index++;
+	}
+	ThreeCastData=JSON.parse(cookieBuffer);
+	//交互数据rectOne
+	cookieBuffer = "";
+	index=1;
+	while(window.localStorage.getItem('rectOne'+index)){
+		cookieBuffer+=window.localStorage.getItem('rectOne'+index);
+		index++;
+	}
+	RectOne=JSON.parse(cookieBuffer);
+	//交互数据rectTwo
+	cookieBuffer = "";
+	index=1;
+	while(window.localStorage.getItem('rectTwo'+index)){
+		cookieBuffer+=window.localStorage.getItem('rectTwo'+index);
+		index++;
+	}
+	RectTwo=JSON.parse(cookieBuffer);
+	//交互数据rectThree
+	cookieBuffer = "";
+	index=1;
+	while(window.localStorage.getItem('rectThree'+index)){
+		cookieBuffer+=window.localStorage.getItem('rectThree'+index);
+		index++;
+	}
+	RectThree=JSON.parse(cookieBuffer);
+	//交互数据rectFour
+	cookieBuffer = "";
+	index=1;
+	while(window.localStorage.getItem('rectFour'+index)){
+		cookieBuffer+=window.localStorage.getItem('rectFour'+index);
+		index++;
+	}
+	RectFour=JSON.parse(cookieBuffer);
+	//交互数据rectFive
+	cookieBuffer = "";
+	index=1;
+	while(window.localStorage.getItem('rectFive'+index)){
+		cookieBuffer+=window.localStorage.getItem('rectFive'+index);
+		index++;
+	}
+	RectFive=JSON.parse(cookieBuffer);
+	//交互数据dynamicOne
+	cookieBuffer = "";
+	index=1;
+	while(window.localStorage.getItem('dynamicOne'+index)){
+		cookieBuffer+=window.localStorage.getItem('dynamicOne'+index);
+		index++;
+	}
+	DynamicOne=JSON.parse(cookieBuffer);
+	//交互数据dynamicTwo
+	cookieBuffer = "";
+	index=1;
+	while(window.localStorage.getItem('dynamicTwo'+index)){
+		cookieBuffer+=window.localStorage.getItem('dynamicTwo'+index);
+		index++;
+	}
+	DynamicTwo=JSON.parse(cookieBuffer);
+	//交互数据dynamicThree
+	cookieBuffer = "";
+	index=1;
+	while(window.localStorage.getItem('dynamicThree'+index)){
+		cookieBuffer+=window.localStorage.getItem('dynamicThree'+index);
+		index++;
+	}
+	DynamicThree=JSON.parse(cookieBuffer);
+	//交互数据dynamicFour
+	cookieBuffer = "";
+	index=1;
+	while(window.localStorage.getItem('dynamicFour'+index)){
+		cookieBuffer+=window.localStorage.getItem('dynamicFour'+index);
+		index++;
+	}
+	OtherString = cookieBuffer;
+	DynamicFour=JSON.parse(cookieBuffer);
+}
+
+//第一幕（按数据顺序画点矩形，模拟人写字）
+function drawPoint(){
+	if(FirstCastData[Cursor]==null){
+		clearInterval(Interval);
+		Cursor = 0;//游标还原
+		Interval = setInterval(showSecoundCast,Times*15);//开启第二幕
+		//var elocnte=document.querySelector("#myElocnte");//诗朗诵开始
+		//elocnte.loop=false;//不循环
+		//elocnte.play();
+		return ;
+	}
+	IndexContext.save();   
+	IndexContext.beginPath();
+	IndexContext.fillRect(FirstCastData[Cursor].x,FirstCastData[Cursor].y,LineWidth*2,LineWidth*2);
+	Cursor++;
+	IndexContext.stroke();
+	IndexContext.closePath();
+	IndexContext.restore();   
+}
+
+//开启第三幕
+function setShowThreeCastInterval(){
+	Interval = setInterval(showThreeCast,3*Times);
+}
+//第二幕(从上下开始刷)
+function showSecoundCast(){
+	if(Cursor>parseInt(IndexCanvas.height/2)+1){
+		clearInterval(Interval);
+		Cursor = 0;//游标还原
+		for(var i=0;i<SecondCastData.length;i++){
+			TempClearData.push(SecondCastData[i]);
+		}
+		setTimeout("setShowThreeCastInterval()",Times*300);//延迟开启第三幕
+		return ;
+	}
+	if(FirstToSecoundCastData.length>0){
+		FirstToSecoundCastData = new Array();//清空数据
+		//获得需要展现的数据
+		for(var i=0;i<FirstCastData.length;i++){
+			//第一幕中数据y大于Cursor并且小于（IndexCanvas.height-Cursor）的显示
+			if(FirstCastData[i].y>Cursor&&FirstCastData[i].y<IndexCanvas.height-Cursor){
+				FirstToSecoundCastData.push(FirstCastData[i]);
+			}	
+		}
+		for(var i=0;i<SecondCastData.length;i++){
+			//第二幕中数据x小于等于Cursor或者大于等于（IndexCanvas.height-Cursor）的显示
+			if(SecondCastData[i].y<=Cursor||SecondCastData[i].y>=IndexCanvas.height-Cursor){
+				FirstToSecoundCastData.push(SecondCastData[i]);
+			}
+		}
+	}else{
+		//展现数据第一次默认为第一幕数据
+		for(var i=0;i<FirstCastData.length;i++){
+			FirstToSecoundCastData.push(FirstCastData[i]);
+		}
+	}
+	IndexContext.clearRect(0, 0, IndexCanvas.width, IndexCanvas.height);  //清屏
+	IndexContext.save();   
+	IndexContext.beginPath();
+	//正式展现
+	for(var i=0;i<FirstToSecoundCastData.length;i++){
+		IndexContext.fillRect(FirstToSecoundCastData[i].x,FirstToSecoundCastData[i].y,LineWidth,LineWidth);
+	}
+	Cursor++;//游标向垂直中央滑动
+	//console.log(Cursor+" "+FirstToSecoundCastData.length);
+	IndexContext.stroke();
+	IndexContext.closePath();
+	IndexContext.restore();   
+}
+
+//展现交互数据
+function showHelperCast(){
+	IndexContext.clearRect(0, 0, IndexCanvas.width, IndexCanvas.height);  //清屏
+	IndexContext.save();   
+	IndexContext.beginPath();
+	dynamicShowTime();
+	dynamicShowTips();
+	//正式展现
+	for(var i=0;i<TotalDynamicCastData.length;i++){
+		IndexContext.fillRect(TotalDynamicCastData[i].x,TotalDynamicCastData[i].y,LineWidth,LineWidth);
+	}
+	IndexContext.stroke();
+	IndexContext.closePath();
+	IndexContext.restore();   
+}
+
+//展现Tips和动态问号和动态鼻涕
+function dynamicShowTips(){
+	var index = parseInt(TipIndex/TipTimes);
+	if(index >= TipTexts.length){
+		DynamicFour=JSON.parse(OtherString);//鼻涕的变化数据
+		index = 0;
+		TipIndex = 0;
+	}
+	//鼻涕延长
+	var inity = 257;//先固定着吧（js数组有点麻烦）
+	var initx = [DynamicFour[0].x,DynamicFour[1].x,DynamicFour[2].x,DynamicFour[3].x,DynamicFour[4].x];
+	for(var i=0;i<DynamicFour.length;i++){
+		DynamicFour[i].y+=1;
+	}
+	DynamicFour.push({"x":initx[0],"y":inity});
+	DynamicFour.push({"x":initx[1],"y":inity});
+	DynamicFour.push({"x":initx[2],"y":inity});
+	DynamicFour.push({"x":initx[3],"y":inity});
+	DynamicFour.push({"x":initx[4],"y":inity});
+	console.log(DynamicFour[0].x+" "+DynamicFour[0].y);
+	
+	//添加问号和鼻涕动态展现
+	TotalDynamicCastData = new Array();
+	for(var i=0;i<DynamicFour.length;i++){
+		TotalDynamicCastData.push(DynamicFour[i]);
+	}
+	for(var i=0;i<MouseMoveCastData.length;i++){
+		TotalDynamicCastData.push(MouseMoveCastData[i]);
+	}
+	if(index>=0&&index<=2){
+		//处理问好和鼻涕数据
+		switch(index){
+			case 2:
+				for(var i=0;i<DynamicThree.length;i++){
+					TotalDynamicCastData.push(DynamicThree[i]);
+				}
+			case 1:
+				for(var i=0;i<DynamicTwo.length;i++){
+					TotalDynamicCastData.push(DynamicTwo[i]);
+				}
+			case 0:
+				for(var i=0;i<DynamicOne.length;i++){
+					TotalDynamicCastData.push(DynamicOne[i]);
+				}
+			default:
+				break;
+		}
+	}
+	IndexContext.strokeText("TIPS:",440,320);
+	IndexContext.strokeText(TipTexts[index],440,340);
+	if(index+1 >= TipTexts.length){
+		IndexContext.strokeText(TipTexts[index+1-TipTexts.length],440,360);
+	}else{
+		IndexContext.strokeText(TipTexts[index+1],440,360);
+	}
+	if(index+2 >= TipTexts.length){
+		IndexContext.strokeText(TipTexts[index+2-TipTexts.length],440,380);
+	}else{
+		IndexContext.strokeText(TipTexts[index+2],440,380);
+	}
+	if(index+3 >= TipTexts.length){
+		IndexContext.strokeText(TipTexts[index+3-TipTexts.length],440,400);
+	}else{
+		IndexContext.strokeText(TipTexts[index+3],440,400);
+	}
+	TipIndex++;
+}
+
+//展现当前时间
+function dynamicShowTime(){
+	var nowDate=new Date();
+	IndexContext.strokeText(nowDate.format("yyyy-MM-dd hh:mm:ss"),440,500);
+}
+
+//第三幕（顺时针旋转切入）
+function showThreeCast(){
+	//console.log(PartNo+" "+TempClearData.length+" "+TempShowData.length+" "+SecondToThreeCastData.length);
+	if(PartNo>7&&TempClearData.length<=0){
+		clearInterval(Interval);
+		PartNo = 0;
+		for(var i=0;i<ThreeCastData.length;i++){//鼠标交互的基础数据，以最后一幕的为主
+			MouseMoveCastData.push(ThreeCastData[i]);
+		}
+		setInterval(showHelperCast,Times);//开启动态时间效果
+		return ;
+	}
+	if(SecondToThreeCastData.length>0){
+		SecondToThreeCastData = new Array();//清空数据
+		switch(PartNo){
+			case 0:
+				//根据当前的扇形消除第二幕的数据
+				for(var i=0;i<TempClearData.length;i++){
+					//（x<=300 y<=x）
+					if(TempClearData[i].x<=IndexCanvas.width/2&&TempClearData[i].y<=TempClearData[i].x){
+						remove(TempClearData,i);
+						i--;
+					}
+				}
+				//根据当前的扇形获得第三幕的数据
+				for(var i=0;i<ThreeCastData.length;i++){
+					if(ThreeCastData[i].x<=IndexCanvas.width/2&&ThreeCastData[i].y<=ThreeCastData[i].x){
+						TempShowData.push(ThreeCastData[i]);
+					}
+				}
+				PartNo++;
+				break;
+			case 1:
+				for(var i=0;i<TempClearData.length;i++){
+					//（x>=300 y<=600-x）
+					if(TempClearData[i].x>=IndexCanvas.width/2&&TempClearData[i].y<=IndexCanvas.width-TempClearData[i].x){
+						remove(TempClearData,i);
+						i--;
+					}
+				}
+				for(var i=0;i<ThreeCastData.length;i++){
+					if(ThreeCastData[i].x>=IndexCanvas.width/2&&ThreeCastData[i].y<=IndexCanvas.width-ThreeCastData[i].x){
+						TempShowData.push(ThreeCastData[i]);
+					}
+				}
+				PartNo++;
+				break;
+			case 2:
+				for(var i=0;i<TempClearData.length;i++){
+					//（y<=300 y>=600-x）
+					if(TempClearData[i].y<=IndexCanvas.width/2&&TempClearData[i].y>=IndexCanvas.width-TempClearData[i].x){
+						remove(TempClearData,i);
+						i--;
+					}
+				}
+				for(var i=0;i<ThreeCastData.length;i++){
+					if(ThreeCastData[i].y<=IndexCanvas.width/2&&ThreeCastData[i].y>=IndexCanvas.width-ThreeCastData[i].x){
+						TempShowData.push(ThreeCastData[i]);
+					}
+				}
+				PartNo++;
+				break;
+			case 3:
+				for(var i=0;i<TempClearData.length;i++){
+					//（y<=x y>=300）
+					if(TempClearData[i].y<=TempClearData[i].x&&TempClearData[i].y>=IndexCanvas.width/2){
+						remove(TempClearData,i);
+						i--;
+					}
+				}
+				for(var i=0;i<ThreeCastData.length;i++){
+					if(ThreeCastData[i].y<=ThreeCastData[i].x&&ThreeCastData[i].y>=IndexCanvas.width/2){
+						TempShowData.push(ThreeCastData[i]);
+					}
+				}
+				PartNo++;
+				break;
+			case 4:
+				for(var i=0;i<TempClearData.length;i++){
+					//（y>=x x>=300）
+					if(TempClearData[i].y>=TempClearData[i].x&&TempClearData[i].x>=IndexCanvas.width/2){
+						remove(TempClearData,i);
+						i--;
+					}
+				}
+				for(var i=0;i<ThreeCastData.length;i++){
+					if(ThreeCastData[i].y>=ThreeCastData[i].x&&ThreeCastData[i].x>=IndexCanvas.width/2){
+						TempShowData.push(ThreeCastData[i]);
+					}
+				}
+				PartNo++;
+				break;
+			case 5:
+				for(var i=0;i<TempClearData.length;i++){
+					//（y>=600-x x<=300）
+					if(TempClearData[i].y>=IndexCanvas.width-TempClearData[i].x&&TempClearData[i].x<=IndexCanvas.width/2){
+						remove(TempClearData,i);
+						i--;
+					}
+				}
+				for(var i=0;i<ThreeCastData.length;i++){
+					if(ThreeCastData[i].y>=IndexCanvas.width-ThreeCastData[i].x&&ThreeCastData[i].x<=IndexCanvas.width/2){
+						TempShowData.push(ThreeCastData[i]);
+					}
+				}
+				PartNo++;
+				break;
+			case 6:
+				for(var i=0;i<TempClearData.length;i++){
+					//（y<=600-x y>=300）
+					if(TempClearData[i].y<=IndexCanvas.width-TempClearData[i].x&&TempClearData[i].y>=IndexCanvas.width/2){
+						remove(TempClearData,i);
+						i--;
+					}
+				}
+				for(var i=0;i<ThreeCastData.length;i++){
+					if(ThreeCastData[i].y<=IndexCanvas.width-ThreeCastData[i].x&&ThreeCastData[i].y>=IndexCanvas.width/2){
+						TempShowData.push(ThreeCastData[i]);
+					}
+				}
+				PartNo++;
+				break;
+			case 7:
+				for(var i=0;i<TempClearData.length;i++){
+					//（y<=300 y>=x）
+					if(TempClearData[i].y<=IndexCanvas.width/2&&TempClearData[i].y>=TempClearData[i].x){
+						remove(TempClearData,i);
+						i--;
+					}
+				}
+				for(var i=0;i<ThreeCastData.length;i++){
+					if(ThreeCastData[i].y<=IndexCanvas.width/2&&ThreeCastData[i].y>=ThreeCastData[i].x){
+						TempShowData.push(ThreeCastData[i]);
+					}
+				}
+				PartNo++;
+				break;
+			default:
+				break;
+		}
+		//获得需要展现的数据
+		for(var i=0;i<TempClearData.length;i++){
+			SecondToThreeCastData.push(TempClearData[i]);
+		}
+		for(var i=0;i<TempShowData.length;i++){
+			SecondToThreeCastData.push(TempShowData[i]);
+		}
+	}else{
+		//展现数据第一次默认为第二幕数据
+		for(var i=0;i<SecondCastData.length;i++){
+			SecondToThreeCastData.push(SecondCastData[i]);
+		}
+	}
+	IndexContext.clearRect(0, 0, IndexCanvas.width, IndexCanvas.height);  //清屏
+	IndexContext.save();   
+	IndexContext.beginPath();
+	//正式展现
+	for(var i=0;i<SecondToThreeCastData.length;i++){
+		IndexContext.fillRect(SecondToThreeCastData[i].x,SecondToThreeCastData[i].y,LineWidth,LineWidth);
+	}
+	IndexContext.stroke();
+	IndexContext.closePath();
+	IndexContext.restore();   
+}
+//第三幕(目前是混乱切入，待定)
+/*function showThreeCast(){
+	console.log("SecondCastData residual data Num:"+TempClearData.length);
+	if(TempClearData.length<=DeviationNum){
+		clearInterval(Interval);
+		Cursor = 0;//游标还原
+		for(var i=0;i<ThreeCastData.length;i++){//鼠标交互的基础数据，以最后一幕的为主
+			MouseMoveCastData.push(ThreeCastData[i]);
+		}
+		return ;
+	}
+	if(SecondToThreeCastData.length>0){
+		SecondToThreeCastData = new Array();//清空数据
+		//获得随机点坐标，并生成矩形组
+		for(var j=0;j<OnceClearRectNum;j++){
+			var x = Math.ceil(Math.random()*IndexCanvas.width);
+			var y = Math.ceil(Math.random()*IndexCanvas.height);
+			//根据生成的矩形消除第二幕的数据
+			for(var i=0;i<TempClearData.length;i++){
+				if(TempClearData[i].x>=x&&TempClearData[i].x<=x+ClearRectSize&&TempClearData[i].y>=y&&TempClearData[i].y<=y+ClearRectSize){
+					remove(TempClearData,i);
+					i--;
+				}
+			}
+			//根据生成的矩形获得第三幕的数据
+			for(var i=0;i<ThreeCastData.length;i++){
+				if(ThreeCastData[i].x>=x&&ThreeCastData[i].x<=x+ClearRectSize&&ThreeCastData[i].y>=y&&ThreeCastData[i].y<=y+ClearRectSize){
+					TempShowData.push(ThreeCastData[i]);
+				}
+			}
+		}
+		//获得需要展现的数据
+		for(var i=0;i<TempClearData.length;i++){
+			SecondToThreeCastData.push(TempClearData[i]);
+		}
+		for(var i=0;i<TempShowData.length;i++){
+			SecondToThreeCastData.push(TempShowData[i]);
+		}
+	}else{
+		//展现数据第一次默认为第二幕数据
+		for(var i=0;i<SecondCastData.length;i++){
+			SecondToThreeCastData.push(SecondCastData[i]);
+		}
+	}
+	IndexContext.clearRect(0, 0, IndexCanvas.width, IndexCanvas.height);  //清屏
+	IndexContext.save();   
+	IndexContext.beginPath();
+	//正式展现
+	for(var i=0;i<SecondToThreeCastData.length;i++){
+		IndexContext.fillRect(SecondToThreeCastData[i].x,SecondToThreeCastData[i].y,LineWidth,LineWidth);
+	}
+	IndexContext.stroke();
+	IndexContext.closePath();
+	IndexContext.restore();   
+}*/
+
+</script>
+</head>
+<body>
+<canvas id="IndexCanvas" style="position:absolute;left:30px;top:30px;border:1px solid" width="600px" height='600px'></canvas>
+<audio controls id="myElocnte" style="display:none">
+	<source  src="./resourceAudio/Radiation.ogg"></source>
+	audio not support
+</audio>
+<audio controls id="backGroundMusicOne" style="position:absolute;left:660px;top:30px;border:1px solid">
+	<source  src="./resourceAudio/Radiation.ogg"></source>
+	audio not support
+</audio>
+<audio controls id="backGroundMusicTwo" style="position:absolute;left:660px;top:60px;border:1px solid">
+	<source  src="./resourceAudio/FreeFlight.ogg"></source>
+	audio not support
+</audio>
+<div id="pointXy" style="position:absolute;left:660px;top:90px;width:150px;height:50px;border:1px solid"></div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./jquery-1.7.1.js"></script>
+<script type="text/javascript">
+$(window).ready(function(){
+	var music=document.querySelector("#FreeFlight");
+	music.loop=true;
+	$("#toggle").click(function(){
+		if(music.paused){
+			music.play();
+			$("#toggle").val("pause");
+		}else{
+			music.pause();
+			$("#toggle").val("play");
+		}
+	});
+});
+</script>
+</head>
+<body>
+Radiation<br/>
+<audio controls loop>
+	<source  src="./resourceAudio/Radiation.ogg"></source>
+	audio not support
+</audio>
+<br/>
+FreeFlight<br/>
+<audio id="FreeFlight" autoplay>
+	<source  src="./resourceAudio/FreeFlight.ogg"></source>
+	audio not support
+</audio><br/>
+<input  id="toggle" type="button" value="toggle"/>
+</body>
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./jquery-1.7.1.js"></script>
+<script src="./LiyCookieUtil.js"></script>
+<script type="text/javascript">
+//<!-- 简单画图工具，可以获得该画的数据 -->
+//点类
+function Point(x,y){
+	this.x=x;
+	this.y=y;
+}
+//<!-- 全局变量 -->
+var GetDataCanvas;
+var GetDataContext;
+var NowPoint=new Point(-1,-1);//当前鼠标的点
+var Data =new Array();//数据集合
+var StringData="";//数据集合的字符串的形式
+var IsSave=false;
+var Times=10;//更新频率
+var CookieValueLength=1100;//cookie值的长度
+var StorageValueLength = 1000*CookieValueLength;//cookie可以存储4k但是storage可以存储5M，所以长度暂且定为cookie的1000倍
+
+$(window).ready(function(){
+	GetDataCanvas=document.querySelector('#getDataCanvas');
+	GetDataContext=GetDataCanvas.getContext('2d');
+	dealMouseAction();
+	setInterval(showPic,Times);
+	//保存第一幕数据
+	document.querySelector("#saveFirstCastData").onclick=function(){
+		var cookieValue="";
+		if(Data==null||Data.length<=0){
+			cookieValue=document.querySelector("#stringData").value;
+		}else{
+			cookieValue=JSON.stringify(Data);
+		}
+		/* 客户端存储使用cookie技术
+		//由于cookie中的数据存在长度限制，所以在这里分段存放
+		var index=1;
+		while(index*CookieValueLength<cookieValue.length){
+			addCookie("firstCast"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
+			index++;
+		}
+		addCookie("firstCast"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+		*/
+		
+		/*客户端存储使用html5的stroage技术*/
+		//window.localStorage.clear();
+		var index=1;
+		while(index*StorageValueLength<cookieValue.length){
+			window.localStorage.setItem("firstCast"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
+			index++;
+		}
+		window.localStorage.setItem("firstCast"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+	}
+	
+	//保存第二幕数据
+	document.querySelector("#saveSecoundCastData").onclick=function(){
+		var cookieValue="";
+		if(Data==null||Data.length<=0){
+			cookieValue=document.querySelector("#stringData").value;
+		}else{
+			cookieValue=JSON.stringify(Data);
+		}
+		/*客户端存储使用html5的stroage技术*/
+		//window.localStorage.clear();
+		var index=1;
+		while(index*StorageValueLength<cookieValue.length){
+			window.localStorage.setItem("secoundCast"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
+			index++;
+		}
+		window.localStorage.setItem("secoundCast"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+	}
+	
+	//保存第三幕数据
+	document.querySelector("#saveThreeCastData").onclick=function(){
+		var cookieValue="";
+		if(Data==null||Data.length<=0){
+			cookieValue=document.querySelector("#stringData").value;
+		}else{
+			cookieValue=JSON.stringify(Data);
+		}
+		/*客户端存储使用html5的stroage技术*/
+		//window.localStorage.clear();
+		var index=1;
+		while(index*StorageValueLength<cookieValue.length){
+			window.localStorage.setItem("threeCast"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
+			index++;
+		}
+		window.localStorage.setItem("threeCast"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+	}
+	
+	//保存RectOne交互数据
+	document.querySelector("#saveRectOne").onclick=function(){
+		var cookieValue="";
+		if(Data==null||Data.length<=0){
+			cookieValue=document.querySelector("#stringData").value;
+		}else{
+			cookieValue=JSON.stringify(Data);
+		}
+		/*客户端存储使用html5的stroage技术*/
+		//window.localStorage.clear();
+		var index=1;
+		while(index*StorageValueLength<cookieValue.length){
+			window.localStorage.setItem("rectOne"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
+			index++;
+		}
+		window.localStorage.setItem("rectOne"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+	}
+	//保存RectTwo交互数据
+	document.querySelector("#saveRectTwo").onclick=function(){
+		var cookieValue="";
+		if(Data==null||Data.length<=0){
+			cookieValue=document.querySelector("#stringData").value;
+		}else{
+			cookieValue=JSON.stringify(Data);
+		}
+		/*客户端存储使用html5的stroage技术*/
+		//window.localStorage.clear();
+		var index=1;
+		while(index*StorageValueLength<cookieValue.length){
+			window.localStorage.setItem("rectTwo"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
+			index++;
+		}
+		window.localStorage.setItem("rectTwo"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+	}
+	//保存RectThree交互数据
+	document.querySelector("#saveRectThree").onclick=function(){
+		var cookieValue="";
+		if(Data==null||Data.length<=0){
+			cookieValue=document.querySelector("#stringData").value;
+		}else{
+			cookieValue=JSON.stringify(Data);
+		}
+		/*客户端存储使用html5的stroage技术*/
+		//window.localStorage.clear();
+		var index=1;
+		while(index*StorageValueLength<cookieValue.length){
+			window.localStorage.setItem("rectThree"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
+			index++;
+		}
+		window.localStorage.setItem("rectThree"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+	}
+	//保存RectFour交互数据
+	document.querySelector("#saveRectFour").onclick=function(){
+		var cookieValue="";
+		if(Data==null||Data.length<=0){
+			cookieValue=document.querySelector("#stringData").value;
+		}else{
+			cookieValue=JSON.stringify(Data);
+		}
+		/*客户端存储使用html5的stroage技术*/
+		//window.localStorage.clear();
+		var index=1;
+		while(index*StorageValueLength<cookieValue.length){
+			window.localStorage.setItem("rectFour"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
+			index++;
+		}
+		window.localStorage.setItem("rectFour"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+	}
+	//保存RectFive交互数据
+	document.querySelector("#saveRectFive").onclick=function(){
+		var cookieValue="";
+		if(Data==null||Data.length<=0){
+			cookieValue=document.querySelector("#stringData").value;
+		}else{
+			cookieValue=JSON.stringify(Data);
+		}
+		/*客户端存储使用html5的stroage技术*/
+		//window.localStorage.clear();
+		var index=1;
+		while(index*StorageValueLength<cookieValue.length){
+			window.localStorage.setItem("rectFive"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
+			index++;
+		}
+		window.localStorage.setItem("rectFive"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+	}
+	//保存DynamicOne交互数据
+	document.querySelector("#saveDynamicOne").onclick=function(){
+		var cookieValue="";
+		if(Data==null||Data.length<=0){
+			cookieValue=document.querySelector("#stringData").value;
+		}else{
+			cookieValue=JSON.stringify(Data);
+		}
+		/*客户端存储使用html5的stroage技术*/
+		//window.localStorage.clear();
+		var index=1;
+		while(index*StorageValueLength<cookieValue.length){
+			window.localStorage.setItem("dynamicOne"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
+			index++;
+		}
+		window.localStorage.setItem("dynamicOne"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+	}
+	//保存DynamicTwo交互数据
+	document.querySelector("#saveDynamicTwo").onclick=function(){
+		var cookieValue="";
+		if(Data==null||Data.length<=0){
+			cookieValue=document.querySelector("#stringData").value;
+		}else{
+			cookieValue=JSON.stringify(Data);
+		}
+		/*客户端存储使用html5的stroage技术*/
+		//window.localStorage.clear();
+		var index=1;
+		while(index*StorageValueLength<cookieValue.length){
+			window.localStorage.setItem("dynamicTwo"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
+			index++;
+		}
+		window.localStorage.setItem("dynamicTwo"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+	}
+	//保存DynamicThree交互数据
+	document.querySelector("#saveDynamicThree").onclick=function(){
+		var cookieValue="";
+		if(Data==null||Data.length<=0){
+			cookieValue=document.querySelector("#stringData").value;
+		}else{
+			cookieValue=JSON.stringify(Data);
+		}
+		/*客户端存储使用html5的stroage技术*/
+		//window.localStorage.clear();
+		var index=1;
+		while(index*StorageValueLength<cookieValue.length){
+			window.localStorage.setItem("dynamicThree"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
+			index++;
+		}
+		window.localStorage.setItem("dynamicThree"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+	}
+	//保存DynamicFour交互数据
+	document.querySelector("#saveDynamicFour").onclick=function(){
+		var cookieValue="";
+		if(Data==null||Data.length<=0){
+			cookieValue=document.querySelector("#stringData").value;
+		}else{
+			cookieValue=JSON.stringify(Data);
+		}
+		/*客户端存储使用html5的stroage技术*/
+		//window.localStorage.clear();
+		var index=1;
+		while(index*StorageValueLength<cookieValue.length){
+			window.localStorage.setItem("dynamicFour"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
+			index++;
+		}
+		window.localStorage.setItem("dynamicFour"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+	}
+	//获得html5 storage机制中的部分数据
+	document.querySelector("#getStorageData").onclick=function(){
+		var topPointXValue = $("#topPointXValue").val();
+		var topPointYValue = $("#topPointYValue").val();
+		var bottomPointXValue = $("#bottomPointXValue").val();
+		var bottomPointYValue = $("#bottomPointYValue").val();
+		//根据 Storage Item Name 获得数据
+		var itemName = $("#itemName").val();
+		var cookieBuffer = "";
+		var index=1;
+		while(window.localStorage.getItem(itemName+""+index)){
+			cookieBuffer+=window.localStorage.getItem(itemName+""+index);
+			index++;
+		}
+		var itemData=JSON.parse(cookieBuffer);
+		var getBuffer = "[";
+		var otherBuffer = "[";
+		for(var i=0;i<itemData.length;i++){
+			if(itemData[i].x>=topPointXValue&&itemData[i].x<=bottomPointXValue&&itemData[i].y>=topPointYValue&&itemData[i].y<=bottomPointYValue){
+				getBuffer += '{"x":'+itemData[i].x+',"y":'+itemData[i].y+'},'
+			}else{
+				otherBuffer += '{"x":'+itemData[i].x+',"y":'+itemData[i].y+'},'
+			}
+		}
+		getBuffer += "]";
+		otherBuffer += "]";
+		$("#getBuffer").val(getBuffer);
+		$("#otherBuffer").val(otherBuffer);
+ 	}
+	//清除数据
+	document.querySelector("#clearStorage").onclick=function(){
+		window.localStorage.clear();
+	}
+});
+
+//监听鼠标操作（鼠标移动获得新的当前坐标，按下准备记录移动到的点 ，松开不记录气候移动到的点）
+function dealMouseAction(){
+	$("#getDataCanvas").mousemove(function(e){   
+		NowPoint.x=e.clientX-e.target.offsetLeft;
+		NowPoint.y=e.clientY-e.target.offsetTop;
+		if(IsSave){
+			var tempPoint=new Point(NowPoint.x,NowPoint.y);
+			Data.push(tempPoint);
+		}
+	});
+	$("#getDataCanvas").mousedown(function(e){   
+		IsSave=true;
+	});
+	$("#getDataCanvas").mouseup(function(e){   
+		IsSave=false;
+	});
+}
+
+//展现图形
+function showPic(){
+	//展现字符串形式
+	if(Data!=null&&Data.length>0){
+		StringData="";
+		StringData+="[";
+		for(var i=0;i<Data.length;i++){
+			if(i<=Data.length-2){
+				StringData+='{"x":'+Data[i].x+',"y":'+Data[i].y+'},';
+			}else{
+				StringData+='{"x":'+Data[i].x+',"y":'+Data[i].y+'}';
+			}
+		}
+		StringData+="]";
+		document.querySelector("#stringData").value=StringData;
+	}
+	//展现图像形式
+	GetDataContext.clearRect(0, 0, GetDataCanvas.width, GetDataCanvas.height);
+	GetDataContext.save();   
+	GetDataContext.beginPath();
+	for(var i=0;i<Data.length;i++){
+		GetDataContext.fillRect(Data[i].x,Data[i].y,1,1);
+	}
+	GetDataContext.stroke();
+	GetDataContext.closePath();
+	GetDataContext.restore();   
+}
+
+</script>
+</head>
+<body>
+<canvas id="getDataCanvas" style="position:absolute;left:30px;top:30px;border:1px solid" width="600px" height='600px'></canvas>
+<div  style="position:absolute;left:640px;top:30px;border:1px solid">
+<table>
+<tr><td><textarea id="stringData" rows="3" cols="40"></textarea></td></tr>
+<tr><td><textarea id="getBuffer" rows="3" cols="40"></textarea></td></tr>
+<tr><td><textarea id="otherBuffer" rows="3" cols="40"></textarea></td></tr>
+</table>
+<table>
+<tr>
+	<td><input id='saveFirstCastData' type="button" value="SaveFirstCastData"></input></td>
+	<td><input id='saveSecoundCastData' type="button" value="SaveSecoundCastData"></input></td>
+</tr>
+<tr>
+	<td><input id='saveThreeCastData' type="button" value="SaveThreeCastData"></input></td>
+	<td><input id='saveRectOne' type="button" value="saveRectOne"></input></td>
+</tr>
+<tr>
+	<td><input id='saveRectTwo' type="button" value="saveRectTwo"></input></td>
+	<td><input id='saveRectThree' type="button" value="saveRectThree"></input></td>
+</tr>
+<tr>
+	<td><input id='saveRectFour' type="button" value="saveRectFour"></input></td>
+	<td><input id='saveRectFive' type="button" value="saveRectFive"></input></td>
+</tr>
+<tr>
+	<td><input id='saveDynamicOne' type="button" value="saveDynamicOne"></input></td>
+	<td><input id='saveDynamicTwo' type="button" value="saveDynamicTwo"></input></td>
+</tr>
+<tr>
+	<td><input id='saveDynamicThree' type="button" value="saveDynamicThree"></input></td>
+	<td><input id='saveDynamicFour' type="button" value="saveDynamicFour"></input></td>
+</tr>
+<tr>
+	<td><input id='clearStorage' type="button" value="ClearStorage"></input></td>
+</tr>
+</table>
+<br/>
+<table>
+<tr>
+	<td>Storage Item Name:</td>
+	<td><input id='itemName' type="text"></input></td>
+</tr>
+<tr>
+	<td><input id='topPointXValue' type="text"></td>
+	<td><input id='topPointYValue' type="text"></input></td>
+</tr>
+<tr>
+	<td><input id='bottomPointXValue' type="text"></td>
+	<td><input id='bottomPointYValue' type="text"></input></td>
+</tr>
+<tr>
+	<td><input id='getStorageData' type="button" value="getStorageData"></td>
+</tr>
+</table>
+</div>
+</body>
+</html>

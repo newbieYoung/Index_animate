@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="./jquery-1.7.1.js"></script>
+<script type="text/javascript">
+//这种解析只考虑获得颜色值在某个范围之内的像素点
+//加载图片，然后转换成动态首页所需要的Json对象
+var Rnum = 135;//R最大值
+var Gnum = 135;//G最大值
+var Bnum = 135;//B最大值
+$(window).ready(function(){
+	var testPic=new Image();
+	testPic.src="./resourcePic/programmerPic/monkey.jpg";//图片路径
+	testPic.onload=function(){
+		var picCanvas=document.querySelector("#picCanvas");
+		var context=picCanvas.getContext("2d");
+		context.drawImage(testPic,0,0,picCanvas.width,picCanvas.height);
+		//解析数据
+		var arrayPicData = context.getImageData(0,0,picCanvas.width,picCanvas.height);
+		var pointPicData = "[";
+		for(var i=0,j=0;i<arrayPicData.data.length;i=i+4,j++){
+			if(arrayPicData.data[i]<=135&&arrayPicData.data[i+1]<=135&&arrayPicData.data[i+2]<=135){
+				var x = j%arrayPicData.width;
+				var y = parseInt(j/arrayPicData.width);
+				pointPicData += '{"x":'+x+',"y":'+y+'},';
+			}
+		}
+		//去掉多余的逗号
+		var finalData = pointPicData.substring(0,pointPicData.length-1);
+		finalData+="]";
+		document.querySelector("#stringData").value = finalData;
+	}
+});
+</script>
+</head>
+<body>
+<canvas id="picCanvas" style="position:absolute;left:10px;top:10px;border:1px solid" width="600px" height='600px'></canvas>
+<textarea id="stringData" style="position:absolute;left:620px;top:10px;border:1px solid" rows="10" cols="40"></textarea>
+</body>
+</html>

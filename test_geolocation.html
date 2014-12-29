@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+<script src="./jquery-1.7.1.js"></script>
+<script type="text/javascript">
+
+$(window).ready(function(){
+	if(testGeolocation()){
+		//单次定位请求
+		navigator.geolocation.getCurrentPosition(updateLocation,handleLocationError,{timeout:50000});
+	}
+	
+});
+//获得位置信息成功后的回调函数
+function updateLocation(position){
+	var longitude = position.coords.longitude;
+	var latitude = position.coords.latitude;
+	var accuracy = position.coords.accuracy;
+	//var timestamp = position.timestamp;
+	var altitude = position.coords.altitude;
+	var altitudeAccuracy = position.coords.altitudeAccracy;
+	var heading = position.coords.heading;
+	var speed = position.coords.speed;
+	
+	$("#longitude").val(longitude);
+	$("#latitude").val(latitude);
+	$("#accuracy").val(accuracy);
+	$("#altitude").val(altitude);
+	$("#altitudeAccuracy").val(altitudeAccuracy);
+	$("#heading").val(heading);
+	$("#speed").val(speed);
+}
+//获得位置信息失败后的回调函数
+function handleLocationError(error){
+	$("#error").val(error.message);
+	switch(error.code){
+		
+	}
+}
+//检测是否支持Html5 Geolocation
+function testGeolocation(){
+	if(navigator.geolocation){
+		$("#support").text("Html5 Geolocation Supported.");
+		return true;
+	}else{
+		$("#support").text("Html5 Geolocation Not Supported.");
+		return false;
+	}
+}
+</script>
+</head>
+<body>
+<div id="support"></div>
+<div>
+<table>
+<tr>显示自己的位置信息</tr>
+<tr><td>longitude(经度)</td><td><input type="text" id="longitude"></td></tr>
+<tr><td>latitude(纬度)</td><td><input type="text" id="latitude"></td></tr>
+<tr><td>accuracy(准确度 单位m)</td><td><input type="text" id="accuracy"></td></tr>
+<tr><td>altitude(海拔高度 单位m)</td><td><input type="text" id="altitude"></td></tr>
+<tr><td>altitudeAccuracy(海拔高度准确度 单位m)</td><td><input type="text" id="altitudeAccuracy"></td></tr>
+<tr><td>heading(行进方向 相对于正北而言)</td><td><input type="text" id="heading"></td></tr>
+<tr><td>speed(行进方向 单位m/s)</td><td><input type="text" id="speed"></td></tr>
+<tr><td>error(定位异常)</td><td><input type="text" id="error"></td></tr>
+</table>
+</div>
+</body>
+</html>
