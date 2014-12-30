@@ -6,20 +6,20 @@
 <script src="./LiyArrayUtil.js"></script>
 <script src="./LiyDateUtil.js"></script>
 <script type="text/javascript">
-//µãÀà
+//ç‚¹ç±»
 function PointClass(x,y){
 	this.x=x;
 	this.y=y;
 }
-//±³¾°ÒôÀÖÀà
+//èƒŒæ™¯éŸ³ä¹ç±»
 function BackgroundMusic(){
 	this.items = new Array();
 	this.nowIndex = -1;
-	//¼ÓÔØ¸èÇú
+	//åŠ è½½æ­Œæ›²
 	this.loadMusic = function(music){
 		this.items.push(music);
 	}
-	//Ñ­»·²¥·Å
+	//å¾ªç¯æ’­æ”¾
 	this.play = function(){
 		if(this.items.length>0){
 			if(this.nowIndex == -1||(this.nowIndex == this.items.length&&this.items[this.nowIndex].paused)){
@@ -30,46 +30,46 @@ function BackgroundMusic(){
 		}
 	}
 }
-//È«¾Ö±äÁ¿
-var IndexCanvas;//ÎèÌ¨»­²¼
-var IndexContext;//ÎèÌ¨ÉÏÏÂÎÄ
-var Cursor=0;//ÓÎ±ê
-var Times=1;//ËÙÂÊ
-var FirstCastData;//µÚÒ»Ä»Êı¾İ
-var SecondCastData;//µÚ¶şÄ»Êı¾İ
-var ThreeCastData;//µÚÈıÄ»Êı¾İ
-var FirstToSecoundCastData = new Array();//µÚÒ»Ä»ºÍµÚ¶şÄ»ÇĞ»»Ê±Õ¹ÏÖµÄÊı¾İ
-var SecondToThreeCastData = new Array();//µÚ¶şÄ»ºÍµÚÈıÄ»ÇĞ»»Ê±Õ¹ÏÖµÄÊı¾İ
-var TempClearData = new Array();//´æ´¢»º´æÊı¾İ
+//å…¨å±€å˜é‡
+var IndexCanvas;//èˆå°ç”»å¸ƒ
+var IndexContext;//èˆå°ä¸Šä¸‹æ–‡
+var Cursor=0;//æ¸¸æ ‡
+var Times=1;//é€Ÿç‡
+var FirstCastData;//ç¬¬ä¸€å¹•æ•°æ®
+var SecondCastData;//ç¬¬äºŒå¹•æ•°æ®
+var ThreeCastData;//ç¬¬ä¸‰å¹•æ•°æ®
+var FirstToSecoundCastData = new Array();//ç¬¬ä¸€å¹•å’Œç¬¬äºŒå¹•åˆ‡æ¢æ—¶å±•ç°çš„æ•°æ®
+var SecondToThreeCastData = new Array();//ç¬¬äºŒå¹•å’Œç¬¬ä¸‰å¹•åˆ‡æ¢æ—¶å±•ç°çš„æ•°æ®
+var TempClearData = new Array();//å­˜å‚¨ç¼“å­˜æ•°æ®
 var TempShowData = new Array();
-var RectOne;//¾ØĞÎÑ¡È¡¿òone
-var RectTwo;//¾ØĞÎÑ¡È¡¿òtwo
-var RectThree;//¾ØĞÎÑ¡È¡¿òthree
-var RectFour;//¾ØĞÎÑ¡È¡¿òfour
-var RectFive;//¾ØĞÎÑ¡È¡¿òfive
-var DynamicOne;//¶¯Ì¬½»»¥Êı¾İone
-var DynamicTwo;//¶¯Ì¬½»»¥Êı¾İtwo
-var DynamicThree;//¶¯Ì¬½»»¥Êı¾İthree
-var DynamicFour;//¶¯Ì¬½»»¥Êı¾İfour
-var OtherString;//ÓÃÓÚ³õÊ¼»¯DynamicFour
-var MouseMoveCastData = new Array();//Êó±êÒÆ¶¯²úÉúµÄ½»»¥ÊÂ¼şÕ¹ÏÖµÄÊı¾İ
-var TotalDynamicCastData = new Array();//½»»¥µÄ×îÖÕÏÔÊ¾Êı¾İ
-var Interval;//ÖØ¸´Ö´ĞĞÆ÷
-var Point = {"x":-1,"y":-1};//Êó±êÒÆ¶¯Ê±µÄµ±Ç°×ø±ê
-var LineWidth = 1;//ÏßÌõ¿í¶È
-var PartNo = 0;//Ë³Ê±ÕëĞı×ªÇĞ»»Ê±µÄ×´Ì¬£¨µÚ¶şÄ»ÏòµÚÈıÄ»ÇĞ»»£©
-var RectWidth = 75;//Í¹ÏÔ¿òµÄ¿í¶È
-var RectHeight = 65;//Í¹ÏÔ¿òµÄ¸ß¶È
+var RectOne;//çŸ©å½¢é€‰å–æ¡†one
+var RectTwo;//çŸ©å½¢é€‰å–æ¡†two
+var RectThree;//çŸ©å½¢é€‰å–æ¡†three
+var RectFour;//çŸ©å½¢é€‰å–æ¡†four
+var RectFive;//çŸ©å½¢é€‰å–æ¡†five
+var DynamicOne;//åŠ¨æ€äº¤äº’æ•°æ®one
+var DynamicTwo;//åŠ¨æ€äº¤äº’æ•°æ®two
+var DynamicThree;//åŠ¨æ€äº¤äº’æ•°æ®three
+var DynamicFour;//åŠ¨æ€äº¤äº’æ•°æ®four
+var OtherString;//ç”¨äºåˆå§‹åŒ–DynamicFour
+var MouseMoveCastData = new Array();//é¼ æ ‡ç§»åŠ¨äº§ç”Ÿçš„äº¤äº’äº‹ä»¶å±•ç°çš„æ•°æ®
+var TotalDynamicCastData = new Array();//äº¤äº’çš„æœ€ç»ˆæ˜¾ç¤ºæ•°æ®
+var Interval;//é‡å¤æ‰§è¡Œå™¨
+var Point = {"x":-1,"y":-1};//é¼ æ ‡ç§»åŠ¨æ—¶çš„å½“å‰åæ ‡
+var LineWidth = 1;//çº¿æ¡å®½åº¦
+var PartNo = 0;//é¡ºæ—¶é’ˆæ—‹è½¬åˆ‡æ¢æ—¶çš„çŠ¶æ€ï¼ˆç¬¬äºŒå¹•å‘ç¬¬ä¸‰å¹•åˆ‡æ¢ï¼‰
+var RectWidth = 75;//å‡¸æ˜¾æ¡†çš„å®½åº¦
+var RectHeight = 65;//å‡¸æ˜¾æ¡†çš„é«˜åº¦
 
-var ClearRectSize = 50;//Ëæ»ú»ìÂÒÇĞÈëµÄ¾ØĞÎ¿í¶ÈºÍ¸ß¶È
-var OnceClearRectNum = 50 ;//Ò»´ÎËæ»ú¾ØĞÎµÄÊıÁ¿
-var DeviationNum = 2 ;//»ìÂÒËæ»úÇĞ»»Ê±ÔÊĞí²ĞÁôµÄÊı¾İÎó²î£¨µÚ¶şÄ»ÏòµÚÈıÄ»ÇĞ»»£©
+var ClearRectSize = 50;//éšæœºæ··ä¹±åˆ‡å…¥çš„çŸ©å½¢å®½åº¦å’Œé«˜åº¦
+var OnceClearRectNum = 50 ;//ä¸€æ¬¡éšæœºçŸ©å½¢çš„æ•°é‡
+var DeviationNum = 2 ;//æ··ä¹±éšæœºåˆ‡æ¢æ—¶å…è®¸æ®‹ç•™çš„æ•°æ®è¯¯å·®ï¼ˆç¬¬äºŒå¹•å‘ç¬¬ä¸‰å¹•åˆ‡æ¢ï¼‰
 
-var BackGroundMusic = new Array();//´æ·Å±³¾°ÒôÀÖµÄÊı×é
-var NowMusic = -1;//µ±Ç°ÕıÔÚ²¥·ÅµÄÊÇµÚ¼¸Ê×±³¾°¸èÇú
-var TipTexts = ["Accidents will happen.","Do nothing by halves.","Do it now.","Creep before you walk.","Business is business.","Business is the salt of life."];//´ı°ìÊÂÏî
+var BackGroundMusic = new Array();//å­˜æ”¾èƒŒæ™¯éŸ³ä¹çš„æ•°ç»„
+var NowMusic = -1;//å½“å‰æ­£åœ¨æ’­æ”¾çš„æ˜¯ç¬¬å‡ é¦–èƒŒæ™¯æ­Œæ›²
+var TipTexts = ["Accidents will happen.","Do nothing by halves.","Do it now.","Creep before you walk.","Business is business.","Business is the salt of life."];//å¾…åŠäº‹é¡¹
 var TipIndex = 0;
-var TipTimes = 10;//´ı°ìÊÂÏîµÄÑÓ³Ù±ä»¯ÆµÂÊ
+var TipTimes = 10;//å¾…åŠäº‹é¡¹çš„å»¶è¿Ÿå˜åŒ–é¢‘ç‡
 
 $(window).ready(function(){
 	IndexCanvas=document.querySelector('#IndexCanvas');
@@ -80,14 +80,14 @@ $(window).ready(function(){
 	
 });
 
-//´¦ÀíÊó±ê½»»¥
+//å¤„ç†é¼ æ ‡äº¤äº’
 function dealMousePoint(){
-	//Êó±êÒÆ¶¯
+	//é¼ æ ‡ç§»åŠ¨
 	$("#IndexCanvas").mousemove(function(e){   
 		Point.x=e.clientX-e.target.offsetLeft;
 		Point.y=e.clientY-e.target.offsetTop;
 		$("#pointXy").text(Point.x+" "+Point.y);
-		if(MouseMoveCastData.length>0){//µ±µÚ¶şÄ»ºÍµÚÈıÄ»ÇĞ»»Íê³ÉÖ®ºó£¬¿ªÊ¼½»»¥Õ¹ÏÖ
+		if(MouseMoveCastData.length>0){//å½“ç¬¬äºŒå¹•å’Œç¬¬ä¸‰å¹•åˆ‡æ¢å®Œæˆä¹‹åï¼Œå¼€å§‹äº¤äº’å±•ç°
 		
 			//console.log(Point.x+" "+Point.y);
 			//console.log(RectOne[0].x+" "+RectOne[0].y);
@@ -115,7 +115,7 @@ function dealMousePoint(){
 					MouseMoveCastData.push(RectFive[i]);
 				}
 			}else{
-				//»¹Ô­
+				//è¿˜åŸ
 				MouseMoveCastData = new Array();
 				for(var i=0;i<ThreeCastData.length;i++){
 					MouseMoveCastData.push(ThreeCastData[i]);
@@ -123,7 +123,7 @@ function dealMousePoint(){
 			}
 		}
 	});
-	//Êó±êµã»÷(Ìø×ªµ½ÏàÓ¦×Ó½çÃæ)
+	//é¼ æ ‡ç‚¹å‡»(è·³è½¬åˆ°ç›¸åº”å­ç•Œé¢)
 	$("#IndexCanvas").mousedown(function(e){   
 		Point.x=e.clientX-e.target.offsetLeft;
 		Point.y=e.clientY-e.target.offsetTop;
@@ -153,26 +153,26 @@ function dealMousePoint(){
 	});
 }
 
-//»ñµÃÊı¾İ
+//è·å¾—æ•°æ®
 function getCastData(){
-	//µÚÒ»Ä»Êı¾İ
+	//ç¬¬ä¸€å¹•æ•°æ®
 	var cookieBuffer="";
-	/* ¿Í»§¶Ë´æ´¢Ê¹ÓÃcookie¼¼Êõ
-	//ÓÉÓÚcookieÊÇ·Ö¶Î´æ·ÅµÄ£¬ËùÒÔÕâÀïÒª·Ö¶Î¶ÁÈ¡£¬È»ºóÔÙÆ´½Ó
+	/* å®¢æˆ·ç«¯å­˜å‚¨ä½¿ç”¨cookieæŠ€æœ¯
+	//ç”±äºcookieæ˜¯åˆ†æ®µå­˜æ”¾çš„ï¼Œæ‰€ä»¥è¿™é‡Œè¦åˆ†æ®µè¯»å–ï¼Œç„¶åå†æ‹¼æ¥
 	var index=1;
 	while(getCookie('firstCast'+index)){
 		cookieBuffer+=getCookie('firstCast'+index);
 		index++;
 	}
 	*/
-	/*¿Í»§¶Ë´æ´¢Ê¹ÓÃhtml5µÄstroage¼¼Êõ*/
+	/*å®¢æˆ·ç«¯å­˜å‚¨ä½¿ç”¨html5çš„stroageæŠ€æœ¯*/
 	var index=1;
 	while(window.localStorage.getItem('firstCast'+index)){
 		cookieBuffer+=window.localStorage.getItem('firstCast'+index);
 		index++;
 	}
 	FirstCastData=JSON.parse(cookieBuffer); 
-	//µÚ¶şÄ»Êı¾İ
+	//ç¬¬äºŒå¹•æ•°æ®
 	cookieBuffer = "";
 	index=1;
 	while(window.localStorage.getItem('secoundCast'+index)){
@@ -180,7 +180,7 @@ function getCastData(){
 		index++;
 	}
 	SecondCastData=JSON.parse(cookieBuffer);
-	//µÚÈıÄ»Êı¾İ
+	//ç¬¬ä¸‰å¹•æ•°æ®
 	cookieBuffer = "";
 	index=1;
 	while(window.localStorage.getItem('threeCast'+index)){
@@ -188,7 +188,7 @@ function getCastData(){
 		index++;
 	}
 	ThreeCastData=JSON.parse(cookieBuffer);
-	//½»»¥Êı¾İrectOne
+	//äº¤äº’æ•°æ®rectOne
 	cookieBuffer = "";
 	index=1;
 	while(window.localStorage.getItem('rectOne'+index)){
@@ -196,7 +196,7 @@ function getCastData(){
 		index++;
 	}
 	RectOne=JSON.parse(cookieBuffer);
-	//½»»¥Êı¾İrectTwo
+	//äº¤äº’æ•°æ®rectTwo
 	cookieBuffer = "";
 	index=1;
 	while(window.localStorage.getItem('rectTwo'+index)){
@@ -204,7 +204,7 @@ function getCastData(){
 		index++;
 	}
 	RectTwo=JSON.parse(cookieBuffer);
-	//½»»¥Êı¾İrectThree
+	//äº¤äº’æ•°æ®rectThree
 	cookieBuffer = "";
 	index=1;
 	while(window.localStorage.getItem('rectThree'+index)){
@@ -212,7 +212,7 @@ function getCastData(){
 		index++;
 	}
 	RectThree=JSON.parse(cookieBuffer);
-	//½»»¥Êı¾İrectFour
+	//äº¤äº’æ•°æ®rectFour
 	cookieBuffer = "";
 	index=1;
 	while(window.localStorage.getItem('rectFour'+index)){
@@ -220,7 +220,7 @@ function getCastData(){
 		index++;
 	}
 	RectFour=JSON.parse(cookieBuffer);
-	//½»»¥Êı¾İrectFive
+	//äº¤äº’æ•°æ®rectFive
 	cookieBuffer = "";
 	index=1;
 	while(window.localStorage.getItem('rectFive'+index)){
@@ -228,7 +228,7 @@ function getCastData(){
 		index++;
 	}
 	RectFive=JSON.parse(cookieBuffer);
-	//½»»¥Êı¾İdynamicOne
+	//äº¤äº’æ•°æ®dynamicOne
 	cookieBuffer = "";
 	index=1;
 	while(window.localStorage.getItem('dynamicOne'+index)){
@@ -236,7 +236,7 @@ function getCastData(){
 		index++;
 	}
 	DynamicOne=JSON.parse(cookieBuffer);
-	//½»»¥Êı¾İdynamicTwo
+	//äº¤äº’æ•°æ®dynamicTwo
 	cookieBuffer = "";
 	index=1;
 	while(window.localStorage.getItem('dynamicTwo'+index)){
@@ -244,7 +244,7 @@ function getCastData(){
 		index++;
 	}
 	DynamicTwo=JSON.parse(cookieBuffer);
-	//½»»¥Êı¾İdynamicThree
+	//äº¤äº’æ•°æ®dynamicThree
 	cookieBuffer = "";
 	index=1;
 	while(window.localStorage.getItem('dynamicThree'+index)){
@@ -252,7 +252,7 @@ function getCastData(){
 		index++;
 	}
 	DynamicThree=JSON.parse(cookieBuffer);
-	//½»»¥Êı¾İdynamicFour
+	//äº¤äº’æ•°æ®dynamicFour
 	cookieBuffer = "";
 	index=1;
 	while(window.localStorage.getItem('dynamicFour'+index)){
@@ -263,14 +263,14 @@ function getCastData(){
 	DynamicFour=JSON.parse(cookieBuffer);
 }
 
-//µÚÒ»Ä»£¨°´Êı¾İË³Ğò»­µã¾ØĞÎ£¬Ä£ÄâÈËĞ´×Ö£©
+//ç¬¬ä¸€å¹•ï¼ˆæŒ‰æ•°æ®é¡ºåºç”»ç‚¹çŸ©å½¢ï¼Œæ¨¡æ‹Ÿäººå†™å­—ï¼‰
 function drawPoint(){
 	if(FirstCastData[Cursor]==null){
 		clearInterval(Interval);
-		Cursor = 0;//ÓÎ±ê»¹Ô­
-		Interval = setInterval(showSecoundCast,Times*15);//¿ªÆôµÚ¶şÄ»
-		//var elocnte=document.querySelector("#myElocnte");//Ê«ÀÊËĞ¿ªÊ¼
-		//elocnte.loop=false;//²»Ñ­»·
+		Cursor = 0;//æ¸¸æ ‡è¿˜åŸ
+		Interval = setInterval(showSecoundCast,Times*15);//å¼€å¯ç¬¬äºŒå¹•
+		//var elocnte=document.querySelector("#myElocnte");//è¯—æœ—è¯µå¼€å§‹
+		//elocnte.loop=false;//ä¸å¾ªç¯
 		//elocnte.play();
 		return ;
 	}
@@ -283,64 +283,64 @@ function drawPoint(){
 	IndexContext.restore();   
 }
 
-//¿ªÆôµÚÈıÄ»
+//å¼€å¯ç¬¬ä¸‰å¹•
 function setShowThreeCastInterval(){
 	Interval = setInterval(showThreeCast,3*Times);
 }
-//µÚ¶şÄ»(´ÓÉÏÏÂ¿ªÊ¼Ë¢)
+//ç¬¬äºŒå¹•(ä»ä¸Šä¸‹å¼€å§‹åˆ·)
 function showSecoundCast(){
 	if(Cursor>parseInt(IndexCanvas.height/2)+1){
 		clearInterval(Interval);
-		Cursor = 0;//ÓÎ±ê»¹Ô­
+		Cursor = 0;//æ¸¸æ ‡è¿˜åŸ
 		for(var i=0;i<SecondCastData.length;i++){
 			TempClearData.push(SecondCastData[i]);
 		}
-		setTimeout("setShowThreeCastInterval()",Times*300);//ÑÓ³Ù¿ªÆôµÚÈıÄ»
+		setTimeout("setShowThreeCastInterval()",Times*300);//å»¶è¿Ÿå¼€å¯ç¬¬ä¸‰å¹•
 		return ;
 	}
 	if(FirstToSecoundCastData.length>0){
-		FirstToSecoundCastData = new Array();//Çå¿ÕÊı¾İ
-		//»ñµÃĞèÒªÕ¹ÏÖµÄÊı¾İ
+		FirstToSecoundCastData = new Array();//æ¸…ç©ºæ•°æ®
+		//è·å¾—éœ€è¦å±•ç°çš„æ•°æ®
 		for(var i=0;i<FirstCastData.length;i++){
-			//µÚÒ»Ä»ÖĞÊı¾İy´óÓÚCursor²¢ÇÒĞ¡ÓÚ£¨IndexCanvas.height-Cursor£©µÄÏÔÊ¾
+			//ç¬¬ä¸€å¹•ä¸­æ•°æ®yå¤§äºCursorå¹¶ä¸”å°äºï¼ˆIndexCanvas.height-Cursorï¼‰çš„æ˜¾ç¤º
 			if(FirstCastData[i].y>Cursor&&FirstCastData[i].y<IndexCanvas.height-Cursor){
 				FirstToSecoundCastData.push(FirstCastData[i]);
 			}	
 		}
 		for(var i=0;i<SecondCastData.length;i++){
-			//µÚ¶şÄ»ÖĞÊı¾İxĞ¡ÓÚµÈÓÚCursor»òÕß´óÓÚµÈÓÚ£¨IndexCanvas.height-Cursor£©µÄÏÔÊ¾
+			//ç¬¬äºŒå¹•ä¸­æ•°æ®xå°äºç­‰äºCursoræˆ–è€…å¤§äºç­‰äºï¼ˆIndexCanvas.height-Cursorï¼‰çš„æ˜¾ç¤º
 			if(SecondCastData[i].y<=Cursor||SecondCastData[i].y>=IndexCanvas.height-Cursor){
 				FirstToSecoundCastData.push(SecondCastData[i]);
 			}
 		}
 	}else{
-		//Õ¹ÏÖÊı¾İµÚÒ»´ÎÄ¬ÈÏÎªµÚÒ»Ä»Êı¾İ
+		//å±•ç°æ•°æ®ç¬¬ä¸€æ¬¡é»˜è®¤ä¸ºç¬¬ä¸€å¹•æ•°æ®
 		for(var i=0;i<FirstCastData.length;i++){
 			FirstToSecoundCastData.push(FirstCastData[i]);
 		}
 	}
-	IndexContext.clearRect(0, 0, IndexCanvas.width, IndexCanvas.height);  //ÇåÆÁ
+	IndexContext.clearRect(0, 0, IndexCanvas.width, IndexCanvas.height);  //æ¸…å±
 	IndexContext.save();   
 	IndexContext.beginPath();
-	//ÕıÊ½Õ¹ÏÖ
+	//æ­£å¼å±•ç°
 	for(var i=0;i<FirstToSecoundCastData.length;i++){
 		IndexContext.fillRect(FirstToSecoundCastData[i].x,FirstToSecoundCastData[i].y,LineWidth,LineWidth);
 	}
-	Cursor++;//ÓÎ±êÏò´¹Ö±ÖĞÑë»¬¶¯
+	Cursor++;//æ¸¸æ ‡å‘å‚ç›´ä¸­å¤®æ»‘åŠ¨
 	//console.log(Cursor+" "+FirstToSecoundCastData.length);
 	IndexContext.stroke();
 	IndexContext.closePath();
 	IndexContext.restore();   
 }
 
-//Õ¹ÏÖ½»»¥Êı¾İ
+//å±•ç°äº¤äº’æ•°æ®
 function showHelperCast(){
-	IndexContext.clearRect(0, 0, IndexCanvas.width, IndexCanvas.height);  //ÇåÆÁ
+	IndexContext.clearRect(0, 0, IndexCanvas.width, IndexCanvas.height);  //æ¸…å±
 	IndexContext.save();   
 	IndexContext.beginPath();
 	dynamicShowTime();
 	dynamicShowTips();
-	//ÕıÊ½Õ¹ÏÖ
+	//æ­£å¼å±•ç°
 	for(var i=0;i<TotalDynamicCastData.length;i++){
 		IndexContext.fillRect(TotalDynamicCastData[i].x,TotalDynamicCastData[i].y,LineWidth,LineWidth);
 	}
@@ -349,16 +349,16 @@ function showHelperCast(){
 	IndexContext.restore();   
 }
 
-//Õ¹ÏÖTipsºÍ¶¯Ì¬ÎÊºÅºÍ¶¯Ì¬±ÇÌé
+//å±•ç°Tipså’ŒåŠ¨æ€é—®å·å’ŒåŠ¨æ€é¼»æ¶•
 function dynamicShowTips(){
 	var index = parseInt(TipIndex/TipTimes);
 	if(index >= TipTexts.length){
-		DynamicFour=JSON.parse(OtherString);//±ÇÌéµÄ±ä»¯Êı¾İ
+		DynamicFour=JSON.parse(OtherString);//é¼»æ¶•çš„å˜åŒ–æ•°æ®
 		index = 0;
 		TipIndex = 0;
 	}
-	//±ÇÌéÑÓ³¤
-	var inity = 257;//ÏÈ¹Ì¶¨×Å°É£¨jsÊı×éÓĞµãÂé·³£©
+	//é¼»æ¶•å»¶é•¿
+	var inity = 257;//å…ˆå›ºå®šç€å§ï¼ˆjsæ•°ç»„æœ‰ç‚¹éº»çƒ¦ï¼‰
 	var initx = [DynamicFour[0].x,DynamicFour[1].x,DynamicFour[2].x,DynamicFour[3].x,DynamicFour[4].x];
 	for(var i=0;i<DynamicFour.length;i++){
 		DynamicFour[i].y+=1;
@@ -370,7 +370,7 @@ function dynamicShowTips(){
 	DynamicFour.push({"x":initx[4],"y":inity});
 	console.log(DynamicFour[0].x+" "+DynamicFour[0].y);
 	
-	//Ìí¼ÓÎÊºÅºÍ±ÇÌé¶¯Ì¬Õ¹ÏÖ
+	//æ·»åŠ é—®å·å’Œé¼»æ¶•åŠ¨æ€å±•ç°
 	TotalDynamicCastData = new Array();
 	for(var i=0;i<DynamicFour.length;i++){
 		TotalDynamicCastData.push(DynamicFour[i]);
@@ -379,7 +379,7 @@ function dynamicShowTips(){
 		TotalDynamicCastData.push(MouseMoveCastData[i]);
 	}
 	if(index>=0&&index<=2){
-		//´¦ÀíÎÊºÃºÍ±ÇÌéÊı¾İ
+		//å¤„ç†é—®å¥½å’Œé¼»æ¶•æ•°æ®
 		switch(index){
 			case 2:
 				for(var i=0;i<DynamicThree.length;i++){
@@ -417,37 +417,37 @@ function dynamicShowTips(){
 	TipIndex++;
 }
 
-//Õ¹ÏÖµ±Ç°Ê±¼ä
+//å±•ç°å½“å‰æ—¶é—´
 function dynamicShowTime(){
 	var nowDate=new Date();
 	IndexContext.strokeText(nowDate.format("yyyy-MM-dd hh:mm:ss"),440,500);
 }
 
-//µÚÈıÄ»£¨Ë³Ê±ÕëĞı×ªÇĞÈë£©
+//ç¬¬ä¸‰å¹•ï¼ˆé¡ºæ—¶é’ˆæ—‹è½¬åˆ‡å…¥ï¼‰
 function showThreeCast(){
 	//console.log(PartNo+" "+TempClearData.length+" "+TempShowData.length+" "+SecondToThreeCastData.length);
 	if(PartNo>7&&TempClearData.length<=0){
 		clearInterval(Interval);
 		PartNo = 0;
-		for(var i=0;i<ThreeCastData.length;i++){//Êó±ê½»»¥µÄ»ù´¡Êı¾İ£¬ÒÔ×îºóÒ»Ä»µÄÎªÖ÷
+		for(var i=0;i<ThreeCastData.length;i++){//é¼ æ ‡äº¤äº’çš„åŸºç¡€æ•°æ®ï¼Œä»¥æœ€åä¸€å¹•çš„ä¸ºä¸»
 			MouseMoveCastData.push(ThreeCastData[i]);
 		}
-		setInterval(showHelperCast,Times);//¿ªÆô¶¯Ì¬Ê±¼äĞ§¹û
+		setInterval(showHelperCast,Times);//å¼€å¯åŠ¨æ€æ—¶é—´æ•ˆæœ
 		return ;
 	}
 	if(SecondToThreeCastData.length>0){
-		SecondToThreeCastData = new Array();//Çå¿ÕÊı¾İ
+		SecondToThreeCastData = new Array();//æ¸…ç©ºæ•°æ®
 		switch(PartNo){
 			case 0:
-				//¸ù¾İµ±Ç°µÄÉÈĞÎÏû³ıµÚ¶şÄ»µÄÊı¾İ
+				//æ ¹æ®å½“å‰çš„æ‰‡å½¢æ¶ˆé™¤ç¬¬äºŒå¹•çš„æ•°æ®
 				for(var i=0;i<TempClearData.length;i++){
-					//£¨x<=300 y<=x£©
+					//ï¼ˆx<=300 y<=xï¼‰
 					if(TempClearData[i].x<=IndexCanvas.width/2&&TempClearData[i].y<=TempClearData[i].x){
 						remove(TempClearData,i);
 						i--;
 					}
 				}
-				//¸ù¾İµ±Ç°µÄÉÈĞÎ»ñµÃµÚÈıÄ»µÄÊı¾İ
+				//æ ¹æ®å½“å‰çš„æ‰‡å½¢è·å¾—ç¬¬ä¸‰å¹•çš„æ•°æ®
 				for(var i=0;i<ThreeCastData.length;i++){
 					if(ThreeCastData[i].x<=IndexCanvas.width/2&&ThreeCastData[i].y<=ThreeCastData[i].x){
 						TempShowData.push(ThreeCastData[i]);
@@ -457,7 +457,7 @@ function showThreeCast(){
 				break;
 			case 1:
 				for(var i=0;i<TempClearData.length;i++){
-					//£¨x>=300 y<=600-x£©
+					//ï¼ˆx>=300 y<=600-xï¼‰
 					if(TempClearData[i].x>=IndexCanvas.width/2&&TempClearData[i].y<=IndexCanvas.width-TempClearData[i].x){
 						remove(TempClearData,i);
 						i--;
@@ -472,7 +472,7 @@ function showThreeCast(){
 				break;
 			case 2:
 				for(var i=0;i<TempClearData.length;i++){
-					//£¨y<=300 y>=600-x£©
+					//ï¼ˆy<=300 y>=600-xï¼‰
 					if(TempClearData[i].y<=IndexCanvas.width/2&&TempClearData[i].y>=IndexCanvas.width-TempClearData[i].x){
 						remove(TempClearData,i);
 						i--;
@@ -487,7 +487,7 @@ function showThreeCast(){
 				break;
 			case 3:
 				for(var i=0;i<TempClearData.length;i++){
-					//£¨y<=x y>=300£©
+					//ï¼ˆy<=x y>=300ï¼‰
 					if(TempClearData[i].y<=TempClearData[i].x&&TempClearData[i].y>=IndexCanvas.width/2){
 						remove(TempClearData,i);
 						i--;
@@ -502,7 +502,7 @@ function showThreeCast(){
 				break;
 			case 4:
 				for(var i=0;i<TempClearData.length;i++){
-					//£¨y>=x x>=300£©
+					//ï¼ˆy>=x x>=300ï¼‰
 					if(TempClearData[i].y>=TempClearData[i].x&&TempClearData[i].x>=IndexCanvas.width/2){
 						remove(TempClearData,i);
 						i--;
@@ -517,7 +517,7 @@ function showThreeCast(){
 				break;
 			case 5:
 				for(var i=0;i<TempClearData.length;i++){
-					//£¨y>=600-x x<=300£©
+					//ï¼ˆy>=600-x x<=300ï¼‰
 					if(TempClearData[i].y>=IndexCanvas.width-TempClearData[i].x&&TempClearData[i].x<=IndexCanvas.width/2){
 						remove(TempClearData,i);
 						i--;
@@ -532,7 +532,7 @@ function showThreeCast(){
 				break;
 			case 6:
 				for(var i=0;i<TempClearData.length;i++){
-					//£¨y<=600-x y>=300£©
+					//ï¼ˆy<=600-x y>=300ï¼‰
 					if(TempClearData[i].y<=IndexCanvas.width-TempClearData[i].x&&TempClearData[i].y>=IndexCanvas.width/2){
 						remove(TempClearData,i);
 						i--;
@@ -547,7 +547,7 @@ function showThreeCast(){
 				break;
 			case 7:
 				for(var i=0;i<TempClearData.length;i++){
-					//£¨y<=300 y>=x£©
+					//ï¼ˆy<=300 y>=xï¼‰
 					if(TempClearData[i].y<=IndexCanvas.width/2&&TempClearData[i].y>=TempClearData[i].x){
 						remove(TempClearData,i);
 						i--;
@@ -563,7 +563,7 @@ function showThreeCast(){
 			default:
 				break;
 		}
-		//»ñµÃĞèÒªÕ¹ÏÖµÄÊı¾İ
+		//è·å¾—éœ€è¦å±•ç°çš„æ•°æ®
 		for(var i=0;i<TempClearData.length;i++){
 			SecondToThreeCastData.push(TempClearData[i]);
 		}
@@ -571,15 +571,15 @@ function showThreeCast(){
 			SecondToThreeCastData.push(TempShowData[i]);
 		}
 	}else{
-		//Õ¹ÏÖÊı¾İµÚÒ»´ÎÄ¬ÈÏÎªµÚ¶şÄ»Êı¾İ
+		//å±•ç°æ•°æ®ç¬¬ä¸€æ¬¡é»˜è®¤ä¸ºç¬¬äºŒå¹•æ•°æ®
 		for(var i=0;i<SecondCastData.length;i++){
 			SecondToThreeCastData.push(SecondCastData[i]);
 		}
 	}
-	IndexContext.clearRect(0, 0, IndexCanvas.width, IndexCanvas.height);  //ÇåÆÁ
+	IndexContext.clearRect(0, 0, IndexCanvas.width, IndexCanvas.height);  //æ¸…å±
 	IndexContext.save();   
 	IndexContext.beginPath();
-	//ÕıÊ½Õ¹ÏÖ
+	//æ­£å¼å±•ç°
 	for(var i=0;i<SecondToThreeCastData.length;i++){
 		IndexContext.fillRect(SecondToThreeCastData[i].x,SecondToThreeCastData[i].y,LineWidth,LineWidth);
 	}
@@ -587,38 +587,38 @@ function showThreeCast(){
 	IndexContext.closePath();
 	IndexContext.restore();   
 }
-//µÚÈıÄ»(Ä¿Ç°ÊÇ»ìÂÒÇĞÈë£¬´ı¶¨)
+//ç¬¬ä¸‰å¹•(ç›®å‰æ˜¯æ··ä¹±åˆ‡å…¥ï¼Œå¾…å®š)
 /*function showThreeCast(){
 	console.log("SecondCastData residual data Num:"+TempClearData.length);
 	if(TempClearData.length<=DeviationNum){
 		clearInterval(Interval);
-		Cursor = 0;//ÓÎ±ê»¹Ô­
-		for(var i=0;i<ThreeCastData.length;i++){//Êó±ê½»»¥µÄ»ù´¡Êı¾İ£¬ÒÔ×îºóÒ»Ä»µÄÎªÖ÷
+		Cursor = 0;//æ¸¸æ ‡è¿˜åŸ
+		for(var i=0;i<ThreeCastData.length;i++){//é¼ æ ‡äº¤äº’çš„åŸºç¡€æ•°æ®ï¼Œä»¥æœ€åä¸€å¹•çš„ä¸ºä¸»
 			MouseMoveCastData.push(ThreeCastData[i]);
 		}
 		return ;
 	}
 	if(SecondToThreeCastData.length>0){
-		SecondToThreeCastData = new Array();//Çå¿ÕÊı¾İ
-		//»ñµÃËæ»úµã×ø±ê£¬²¢Éú³É¾ØĞÎ×é
+		SecondToThreeCastData = new Array();//æ¸…ç©ºæ•°æ®
+		//è·å¾—éšæœºç‚¹åæ ‡ï¼Œå¹¶ç”ŸæˆçŸ©å½¢ç»„
 		for(var j=0;j<OnceClearRectNum;j++){
 			var x = Math.ceil(Math.random()*IndexCanvas.width);
 			var y = Math.ceil(Math.random()*IndexCanvas.height);
-			//¸ù¾İÉú³ÉµÄ¾ØĞÎÏû³ıµÚ¶şÄ»µÄÊı¾İ
+			//æ ¹æ®ç”Ÿæˆçš„çŸ©å½¢æ¶ˆé™¤ç¬¬äºŒå¹•çš„æ•°æ®
 			for(var i=0;i<TempClearData.length;i++){
 				if(TempClearData[i].x>=x&&TempClearData[i].x<=x+ClearRectSize&&TempClearData[i].y>=y&&TempClearData[i].y<=y+ClearRectSize){
 					remove(TempClearData,i);
 					i--;
 				}
 			}
-			//¸ù¾İÉú³ÉµÄ¾ØĞÎ»ñµÃµÚÈıÄ»µÄÊı¾İ
+			//æ ¹æ®ç”Ÿæˆçš„çŸ©å½¢è·å¾—ç¬¬ä¸‰å¹•çš„æ•°æ®
 			for(var i=0;i<ThreeCastData.length;i++){
 				if(ThreeCastData[i].x>=x&&ThreeCastData[i].x<=x+ClearRectSize&&ThreeCastData[i].y>=y&&ThreeCastData[i].y<=y+ClearRectSize){
 					TempShowData.push(ThreeCastData[i]);
 				}
 			}
 		}
-		//»ñµÃĞèÒªÕ¹ÏÖµÄÊı¾İ
+		//è·å¾—éœ€è¦å±•ç°çš„æ•°æ®
 		for(var i=0;i<TempClearData.length;i++){
 			SecondToThreeCastData.push(TempClearData[i]);
 		}
@@ -626,15 +626,15 @@ function showThreeCast(){
 			SecondToThreeCastData.push(TempShowData[i]);
 		}
 	}else{
-		//Õ¹ÏÖÊı¾İµÚÒ»´ÎÄ¬ÈÏÎªµÚ¶şÄ»Êı¾İ
+		//å±•ç°æ•°æ®ç¬¬ä¸€æ¬¡é»˜è®¤ä¸ºç¬¬äºŒå¹•æ•°æ®
 		for(var i=0;i<SecondCastData.length;i++){
 			SecondToThreeCastData.push(SecondCastData[i]);
 		}
 	}
-	IndexContext.clearRect(0, 0, IndexCanvas.width, IndexCanvas.height);  //ÇåÆÁ
+	IndexContext.clearRect(0, 0, IndexCanvas.width, IndexCanvas.height);  //æ¸…å±
 	IndexContext.save();   
 	IndexContext.beginPath();
-	//ÕıÊ½Õ¹ÏÖ
+	//æ­£å¼å±•ç°
 	for(var i=0;i<SecondToThreeCastData.length;i++){
 		IndexContext.fillRect(SecondToThreeCastData[i].x,SecondToThreeCastData[i].y,LineWidth,LineWidth);
 	}
