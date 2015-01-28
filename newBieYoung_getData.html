@@ -20,7 +20,6 @@ var StringData="";//数据集合的字符串的形式
 var IsSave=false;
 var Times=10;//更新频率
 var CookieValueLength=1100;//cookie值的长度
-var StorageValueLength = 1000*CookieValueLength;//cookie可以存储4k但是storage可以存储5M，所以长度暂且定为cookie的1000倍
 
 $(window).ready(function(){
 	GetDataCanvas=document.querySelector('#getDataCanvas');
@@ -47,12 +46,7 @@ $(window).ready(function(){
 		
 		/*客户端存储使用html5的stroage技术*/
 		//window.localStorage.clear();
-		var index=1;
-		while(index*StorageValueLength<cookieValue.length){
-			window.localStorage.setItem("firstCast"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
-			index++;
-		}
-		window.localStorage.setItem("firstCast"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+		window.localStorage.setItem("firstCast",cookieValue);
 	}
 	
 	//保存第二幕数据
@@ -63,14 +57,7 @@ $(window).ready(function(){
 		}else{
 			cookieValue=JSON.stringify(Data);
 		}
-		/*客户端存储使用html5的stroage技术*/
-		//window.localStorage.clear();
-		var index=1;
-		while(index*StorageValueLength<cookieValue.length){
-			window.localStorage.setItem("secoundCast"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
-			index++;
-		}
-		window.localStorage.setItem("secoundCast"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+		window.localStorage.setItem("secoundCast",cookieValue);
 	}
 	
 	//保存第三幕数据
@@ -81,14 +68,7 @@ $(window).ready(function(){
 		}else{
 			cookieValue=JSON.stringify(Data);
 		}
-		/*客户端存储使用html5的stroage技术*/
-		//window.localStorage.clear();
-		var index=1;
-		while(index*StorageValueLength<cookieValue.length){
-			window.localStorage.setItem("threeCast"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
-			index++;
-		}
-		window.localStorage.setItem("threeCast"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+		window.localStorage.setItem("threeCast",cookieValue);
 	}
 	
 	//保存RectOne交互数据
@@ -99,14 +79,7 @@ $(window).ready(function(){
 		}else{
 			cookieValue=JSON.stringify(Data);
 		}
-		/*客户端存储使用html5的stroage技术*/
-		//window.localStorage.clear();
-		var index=1;
-		while(index*StorageValueLength<cookieValue.length){
-			window.localStorage.setItem("rectOne"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
-			index++;
-		}
-		window.localStorage.setItem("rectOne"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+		window.localStorage.setItem("rectOne",cookieValue);
 	}
 	//保存RectTwo交互数据
 	document.querySelector("#saveRectTwo").onclick=function(){
@@ -116,14 +89,7 @@ $(window).ready(function(){
 		}else{
 			cookieValue=JSON.stringify(Data);
 		}
-		/*客户端存储使用html5的stroage技术*/
-		//window.localStorage.clear();
-		var index=1;
-		while(index*StorageValueLength<cookieValue.length){
-			window.localStorage.setItem("rectTwo"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
-			index++;
-		}
-		window.localStorage.setItem("rectTwo"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+		window.localStorage.setItem("rectTwo",cookieValue);
 	}
 	//保存RectThree交互数据
 	document.querySelector("#saveRectThree").onclick=function(){
@@ -133,14 +99,7 @@ $(window).ready(function(){
 		}else{
 			cookieValue=JSON.stringify(Data);
 		}
-		/*客户端存储使用html5的stroage技术*/
-		//window.localStorage.clear();
-		var index=1;
-		while(index*StorageValueLength<cookieValue.length){
-			window.localStorage.setItem("rectThree"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
-			index++;
-		}
-		window.localStorage.setItem("rectThree"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+		window.localStorage.setItem("rectThree",cookieValue);
 	}
 	//保存RectFour交互数据
 	document.querySelector("#saveRectFour").onclick=function(){
@@ -150,14 +109,7 @@ $(window).ready(function(){
 		}else{
 			cookieValue=JSON.stringify(Data);
 		}
-		/*客户端存储使用html5的stroage技术*/
-		//window.localStorage.clear();
-		var index=1;
-		while(index*StorageValueLength<cookieValue.length){
-			window.localStorage.setItem("rectFour"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
-			index++;
-		}
-		window.localStorage.setItem("rectFour"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+		window.localStorage.setItem("rectFour",cookieValue);
 	}
 	//保存RectFive交互数据
 	document.querySelector("#saveRectFive").onclick=function(){
@@ -167,14 +119,7 @@ $(window).ready(function(){
 		}else{
 			cookieValue=JSON.stringify(Data);
 		}
-		/*客户端存储使用html5的stroage技术*/
-		//window.localStorage.clear();
-		var index=1;
-		while(index*StorageValueLength<cookieValue.length){
-			window.localStorage.setItem("rectFive"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
-			index++;
-		}
-		window.localStorage.setItem("rectFive"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+		window.localStorage.setItem("rectFive",cookieValue);
 	}
 	//保存DynamicOne交互数据
 	document.querySelector("#saveDynamicOne").onclick=function(){
@@ -184,14 +129,7 @@ $(window).ready(function(){
 		}else{
 			cookieValue=JSON.stringify(Data);
 		}
-		/*客户端存储使用html5的stroage技术*/
-		//window.localStorage.clear();
-		var index=1;
-		while(index*StorageValueLength<cookieValue.length){
-			window.localStorage.setItem("dynamicOne"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
-			index++;
-		}
-		window.localStorage.setItem("dynamicOne"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+		window.localStorage.setItem("dynamicOne",cookieValue);
 	}
 	//保存DynamicTwo交互数据
 	document.querySelector("#saveDynamicTwo").onclick=function(){
@@ -201,14 +139,7 @@ $(window).ready(function(){
 		}else{
 			cookieValue=JSON.stringify(Data);
 		}
-		/*客户端存储使用html5的stroage技术*/
-		//window.localStorage.clear();
-		var index=1;
-		while(index*StorageValueLength<cookieValue.length){
-			window.localStorage.setItem("dynamicTwo"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
-			index++;
-		}
-		window.localStorage.setItem("dynamicTwo"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+		window.localStorage.setItem("dynamicTwo",cookieValue);
 	}
 	//保存DynamicThree交互数据
 	document.querySelector("#saveDynamicThree").onclick=function(){
@@ -218,14 +149,7 @@ $(window).ready(function(){
 		}else{
 			cookieValue=JSON.stringify(Data);
 		}
-		/*客户端存储使用html5的stroage技术*/
-		//window.localStorage.clear();
-		var index=1;
-		while(index*StorageValueLength<cookieValue.length){
-			window.localStorage.setItem("dynamicThree"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
-			index++;
-		}
-		window.localStorage.setItem("dynamicThree"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+		window.localStorage.setItem("dynamicThree",cookieValue);
 	}
 	//保存DynamicFour交互数据
 	document.querySelector("#saveDynamicFour").onclick=function(){
@@ -235,14 +159,7 @@ $(window).ready(function(){
 		}else{
 			cookieValue=JSON.stringify(Data);
 		}
-		/*客户端存储使用html5的stroage技术*/
-		//window.localStorage.clear();
-		var index=1;
-		while(index*StorageValueLength<cookieValue.length){
-			window.localStorage.setItem("dynamicFour"+index,cookieValue.substring((CookieValueLength*(index-1)),(CookieValueLength*index)));
-			index++;
-		}
-		window.localStorage.setItem("dynamicFour"+index,cookieValue.substring((CookieValueLength*(index-1)),cookieValue.length));
+		window.localStorage.setItem("dynamicFour",cookieValue);
 	}
 	//获得html5 storage机制中的部分数据
 	document.querySelector("#getStorageData").onclick=function(){
@@ -252,12 +169,7 @@ $(window).ready(function(){
 		var bottomPointYValue = $("#bottomPointYValue").val();
 		//根据 Storage Item Name 获得数据
 		var itemName = $("#itemName").val();
-		var cookieBuffer = "";
-		var index=1;
-		while(window.localStorage.getItem(itemName+""+index)){
-			cookieBuffer+=window.localStorage.getItem(itemName+""+index);
-			index++;
-		}
+		var cookieBuffer = window.localStorage.getItem(itemName);
 		var itemData=JSON.parse(cookieBuffer);
 		var getBuffer = "[";
 		var otherBuffer = "[";
@@ -328,7 +240,7 @@ function showPic(){
 </script>
 </head>
 <body>
-<canvas id="getDataCanvas" style="position:absolute;left:30px;top:30px;border:1px solid" width="600px" height='600px'></canvas>
+<canvas id="getDataCanvas" style="position:absolute;left:30px;top:30px;border:1px solid" width="570px" height='1200px'></canvas>
 <div  style="position:absolute;left:640px;top:30px;border:1px solid">
 <table>
 <tr><td><textarea id="stringData" rows="3" cols="40"></textarea></td></tr>

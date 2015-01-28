@@ -166,99 +166,40 @@ function getCastData(){
 	}
 	*/
 	/*客户端存储使用html5的stroage技术*/
-	var index=1;
-	while(window.localStorage.getItem('firstCast'+index)){
-		cookieBuffer+=window.localStorage.getItem('firstCast'+index);
-		index++;
-	}
+	cookieBuffer = window.localStorage.getItem('firstCast');
 	FirstCastData=JSON.parse(cookieBuffer); 
 	//第二幕数据
-	cookieBuffer = "";
-	index=1;
-	while(window.localStorage.getItem('secoundCast'+index)){
-		cookieBuffer+=window.localStorage.getItem('secoundCast'+index);
-		index++;
-	}
+	cookieBuffer = window.localStorage.getItem('secoundCast');
 	SecondCastData=JSON.parse(cookieBuffer);
 	//第三幕数据
-	cookieBuffer = "";
-	index=1;
-	while(window.localStorage.getItem('threeCast'+index)){
-		cookieBuffer+=window.localStorage.getItem('threeCast'+index);
-		index++;
-	}
+	cookieBuffer = window.localStorage.getItem('threeCast');
 	ThreeCastData=JSON.parse(cookieBuffer);
 	//交互数据rectOne
-	cookieBuffer = "";
-	index=1;
-	while(window.localStorage.getItem('rectOne'+index)){
-		cookieBuffer+=window.localStorage.getItem('rectOne'+index);
-		index++;
-	}
+	cookieBuffer = window.localStorage.getItem('rectOne');
 	RectOne=JSON.parse(cookieBuffer);
 	//交互数据rectTwo
-	cookieBuffer = "";
-	index=1;
-	while(window.localStorage.getItem('rectTwo'+index)){
-		cookieBuffer+=window.localStorage.getItem('rectTwo'+index);
-		index++;
-	}
+	cookieBuffer = window.localStorage.getItem('rectTwo');
 	RectTwo=JSON.parse(cookieBuffer);
 	//交互数据rectThree
-	cookieBuffer = "";
-	index=1;
-	while(window.localStorage.getItem('rectThree'+index)){
-		cookieBuffer+=window.localStorage.getItem('rectThree'+index);
-		index++;
-	}
+	cookieBuffer = window.localStorage.getItem('rectThree');
 	RectThree=JSON.parse(cookieBuffer);
 	//交互数据rectFour
-	cookieBuffer = "";
-	index=1;
-	while(window.localStorage.getItem('rectFour'+index)){
-		cookieBuffer+=window.localStorage.getItem('rectFour'+index);
-		index++;
-	}
+	cookieBuffer = window.localStorage.getItem('rectFour');
 	RectFour=JSON.parse(cookieBuffer);
 	//交互数据rectFive
-	cookieBuffer = "";
-	index=1;
-	while(window.localStorage.getItem('rectFive'+index)){
-		cookieBuffer+=window.localStorage.getItem('rectFive'+index);
-		index++;
-	}
+	cookieBuffer = window.localStorage.getItem('rectFive');
 	RectFive=JSON.parse(cookieBuffer);
 	//交互数据dynamicOne
-	cookieBuffer = "";
-	index=1;
-	while(window.localStorage.getItem('dynamicOne'+index)){
-		cookieBuffer+=window.localStorage.getItem('dynamicOne'+index);
-		index++;
-	}
+	cookieBuffer = window.localStorage.getItem('dynamicOne');
 	DynamicOne=JSON.parse(cookieBuffer);
 	//交互数据dynamicTwo
-	cookieBuffer = "";
-	index=1;
-	while(window.localStorage.getItem('dynamicTwo'+index)){
-		cookieBuffer+=window.localStorage.getItem('dynamicTwo'+index);
-		index++;
-	}
+	cookieBuffer = window.localStorage.getItem('dynamicTwo');
 	DynamicTwo=JSON.parse(cookieBuffer);
 	//交互数据dynamicThree
-	cookieBuffer = "";
-	index=1;
-	while(window.localStorage.getItem('dynamicThree'+index)){
-		cookieBuffer+=window.localStorage.getItem('dynamicThree'+index);
-		index++;
-	}
+	cookieBuffer = window.localStorage.getItem('dynamicThree');
 	DynamicThree=JSON.parse(cookieBuffer);
 	//交互数据dynamicFour
-	cookieBuffer = "";
-	index=1;
-	while(window.localStorage.getItem('dynamicFour'+index)){
-		cookieBuffer+=window.localStorage.getItem('dynamicFour'+index);
-		index++;
-	}
+	cookieBuffer = window.localStorage.getItem('dynamicFour');
 	OtherString = cookieBuffer;
 	DynamicFour=JSON.parse(cookieBuffer);
 }
