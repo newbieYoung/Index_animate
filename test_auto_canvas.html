@@ -1,16 +1,31 @@
 <html>
 <head>
 	<title>canvas自适应测试</title>
+	<meta charset="utf-8">
 </head>
 <style>
-
+	body{
+		height: 100%;
+		width: 100%;
+		margin: 0;
+		padding: 0;
+	}
+	.autoCanvas{
+		border:1px solid black;
+		margin:0 auto;
+		display: block;
+		position: absolute;
+		top:50%;
+		left:50%;
+		transform:translate(-50%,-50%);
+	}
 </style>
 <script src="./jquery-1.7.1.js"></script>
 <body>
-	<body style="height: 100%;width: 100%;margin: 0;padding: 0;">
-	<canvas id="autoCanvas" width="300px" height="600px" id="gameCanvas" style="border:1px solid black;margin:auto;display: block;">
-	您的浏览器不支持HTML5 canvas，请换一个浏览器。
-	</canvas>
+	<body style="">
+		<canvas id="autoCanvas" width="300px" height="600px" class="autoCanvas">
+			您的浏览器不支持HTML5 canvas，请换一个浏览器。
+		</canvas>
 </body>
 <script>
 	var autoCanvas = document.querySelector("#autoCanvas");
@@ -21,6 +36,7 @@
 	})
 	//canvas自适应
 	function selfAdaption(){
+		//保持宽高比自适应
 		var realWidth;//真实宽度
 		var realHeight;//真实高度
 		var basicWidth = 300.0;//标准宽度
@@ -35,6 +51,7 @@
 			realHeight = realWidth/(basicWidth/basicHeight);
 		}
 		$(autoCanvas).css({"width":realWidth+"px","height":realHeight+"px"});
+		//垂直居中
 	}
 	//监听屏幕变化
 	window.addEventListener("resize", function () {  
