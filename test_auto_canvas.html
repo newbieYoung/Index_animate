@@ -1,5 +1,7 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+	<meta charset="UTF-8">
 	<title>canvas自适应测试</title>
 	<meta charset="utf-8">
 </head>
@@ -22,7 +24,7 @@
 </style>
 <script src="./jquery-1.7.1.js"></script>
 <body>
-	<body style="">
+<body >
 		<canvas id="autoCanvas" width="300px" height="600px" class="autoCanvas">
 			您的浏览器不支持HTML5 canvas，请换一个浏览器。
 		</canvas>
@@ -41,8 +43,8 @@
 		var realHeight;//真实高度
 		var basicWidth = 300.0;//标准宽度
 		var basicHeight = 600.0;//标准高度
-		var clientWidth = parseFloat(document.body.clientWidth-2);//网页可见区域宽度-边框宽度
-		var clientHeight = parseFloat(document.body.clientHeight-2);//网页可见区域高度-边框宽度
+		var clientWidth = parseFloat(document.documentElement.clientWidth-2);
+		var clientHeight = parseFloat(document.documentElement.clientHeight-2);
 		if(clientWidth/clientHeight>basicWidth/basicHeight){
 			realHeight = clientHeight;
 			realWidth = realHeight*basicWidth/basicHeight;
@@ -51,7 +53,6 @@
 			realHeight = realWidth/(basicWidth/basicHeight);
 		}
 		$(autoCanvas).css({"width":realWidth+"px","height":realHeight+"px"});
-		//垂直居中
 	}
 	//监听屏幕变化
 	window.addEventListener("resize", function () {  
