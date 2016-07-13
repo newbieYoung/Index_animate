@@ -1,30 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<script src="./jquery-1.7.1.js"></script>
-<script type="text/javascript">
-$(function(){
-	//添加类似jquery的选择器
-	//alert(document.querySelector("header").innerHTML);
-	console.log(document.querySelector("header").innerHTML);
-	var person={"name":"liy","age":"22"};
-	//alert(person.name);
-	//json不需要外部文件支持
-	var strPerson=window.JSON.stringify(person);
-	console.log(strPerson);
-	alert(strPerson);
-});
-</script>
+	<meta charset="utf-8">
+	<style type="text/css">
+		header {color:red;}
+		footer {color:blue;}
+	</style>
 </head>
-</body>
-<style type="text/css">
-	header {color:red;}
-	footer {color:blue;}
-</style>
-<header>新增头部区域标签</header>
-<nav>新增导航辅助内容标签</nav>
-<aside>新增相关内容或者引文标签</aside>
-<footer>新增脚部区域标签</footer>
+<body>
+	<header>新增头部区域标签</header>
+	<nav>新增导航辅助内容标签</nav>
+	<aside>新增相关内容或者引文标签</aside>
+	<footer>新增脚部区域标签</footer>
+	
+	<script src="./jquery-1.7.1.js"></script>
+	<script type="text/javascript">
+	$(function(){
+		//添加类似jquery的选择器
+		//alert(document.querySelector("header").innerHTML);
+		console.log(document.querySelector("header").innerHTML);
+		var person={"name":"liy","age":"22"};
+		//alert(person.name);
+		//json不需要外部文件支持
+		var strPerson=window.JSON.stringify(person);
+		console.log(strPerson);
+		alert(strPerson);
+	});
+	</script>
 </body>
 </html>

@@ -1,481 +1,480 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<script src="./jquery-1.7.1.js"></script>
-<script type="text/javascript">
-//业务传入数据
-//坐标数据格式为（注释或者单位+数据（顺序排列））
-var xAxis=["时间","01:00","02:00","03:00","04:00","05:00","06:00","07:00","08:00","09:00","10:00","11:00","12:00"];//坐标刻度数据一定要按顺序插入数组
-var yAxis=["温度","20","30","40","50","60","70","80","90","100","110"];//y坐标的最大刻度要大于等于业务数据的最大值
-var startPoint={"xValue":"00:00","yValue":"0","xKey":"60","yKey":"1"};//原点的意义（由于有时候会因为实际情况的不同导致单位刻度的意义有变化，比如时间 ）
-//var dataObject={"indexToData":"","xValue":"","yValue":"","type":""} indexToData：表示和后台数据关联的主键之类的
-var oneObject={"indexToData":"001","xValue":"01:00","yValue":"45","type":"blue"};
-var twoObject={"indexToData":"002","xValue":"02:00","yValue":"56","type":"blue"};
-var threeObject={"indexToData":"003","xValue":"03:00","yValue":"78","type":"blue"};
-var fourObject={"indexToData":"004","xValue":"04:00","yValue":"72","type":"blue"};
-var fiveObject={"indexToData":"005","xValue":"05:00","yValue":"83","type":"blue"};
-var sixObject={"indexToData":"006","xValue":"06:00","yValue":"42","type":"blue"};
-var sevenObject={"indexToData":"007","xValue":"07:00","yValue":"55","type":"blue"};
-var eightObject={"indexToData":"008","xValue":"08:00","yValue":"33","type":"blue"};
-var nineObject={"indexToData":"009","xValue":"09:00","yValue":"66","type":"blue"};
-var tenObject={"indexToData":"010","xValue":"10:00","yValue":"60","type":"blue"};
-var eleObject={"indexToData":"011","xValue":"11:00","yValue":"56","type":"blue"};
-var twObject={"indexToData":"012","xValue":"12:00","yValue":"72","type":"blue"};
-var data=[oneObject,twoObject,threeObject,fourObject,fiveObject,
-		 sixObject,sevenObject,eightObject,nineObject,tenObject,eleObject,twObject];
+	<meta charset="utf-8">
+</head>
+<body>
+	<canvas id="outerCanvas" style="position:absolute;left:10px;top:10px;border:1px solid" width="851px" height='653px'></canvas>
+	<!-- 在style属性中添加width和height属性会出现莫名变换导致图像差异很大-->
+	<canvas id="basicCanvas" style="position:absolute;left:30px;top:30px;" width="811px" height='613px'></canvas>
+	<div id="point" style="position:absolute;left:870px;top:10px;width:150px;height:50px;border:1px solid"></div>
+	<div style="position:absolute;left:870px;top:100px;width:150px;height:250px;border:1px solid">
+	<table>
+		<tr><td>控制面板</td></tr>
+		<tr><td><input id="goToStart" type="button" value="开始"/></td><td><input id="goToEnd" type="button" value="结尾"/></td></tr>
+		<tr><td><input id="add" type="button" value="+"/></td><td><input id="reduce" type="button" value="-"/></td></tr>
+		<tr><td>X:<input id="xValue" type="text" style="width:45px"/></td><td>Y:<input id="yValue" type="text" style="width:45px"/></td></tr>
+		<tr><td><input id="goTo" type="button" value="GoTo"/></td></tr>
+		<tr><td><input id="closeTo" type="button" value="CloseTo"/></td></tr>
+		<tr><td><select id="linePointsIndex" style="width:70px"></select></td></tr>
+		<tr><td><input id="pointTo" type="button" value="PointTo"/></td></tr>
+		<tr><td><input id="nextTo" type="button" value="NextTo"/></td></tr>
+	</table>
+	</div>
+	
+	<script src="./jquery-1.7.1.js"></script>
+	<script type="text/javascript">
+	//业务传入数据
+	//坐标数据格式为（注释或者单位+数据（顺序排列））
+	var xAxis=["时间","01:00","02:00","03:00","04:00","05:00","06:00","07:00","08:00","09:00","10:00","11:00","12:00"];//坐标刻度数据一定要按顺序插入数组
+	var yAxis=["温度","20","30","40","50","60","70","80","90","100","110"];//y坐标的最大刻度要大于等于业务数据的最大值
+	var startPoint={"xValue":"00:00","yValue":"0","xKey":"60","yKey":"1"};//原点的意义（由于有时候会因为实际情况的不同导致单位刻度的意义有变化，比如时间 ）
+	//var dataObject={"indexToData":"","xValue":"","yValue":"","type":""} indexToData：表示和后台数据关联的主键之类的
+	var oneObject={"indexToData":"001","xValue":"01:00","yValue":"45","type":"blue"};
+	var twoObject={"indexToData":"002","xValue":"02:00","yValue":"56","type":"blue"};
+	var threeObject={"indexToData":"003","xValue":"03:00","yValue":"78","type":"blue"};
+	var fourObject={"indexToData":"004","xValue":"04:00","yValue":"72","type":"blue"};
+	var fiveObject={"indexToData":"005","xValue":"05:00","yValue":"83","type":"blue"};
+	var sixObject={"indexToData":"006","xValue":"06:00","yValue":"42","type":"blue"};
+	var sevenObject={"indexToData":"007","xValue":"07:00","yValue":"55","type":"blue"};
+	var eightObject={"indexToData":"008","xValue":"08:00","yValue":"33","type":"blue"};
+	var nineObject={"indexToData":"009","xValue":"09:00","yValue":"66","type":"blue"};
+	var tenObject={"indexToData":"010","xValue":"10:00","yValue":"60","type":"blue"};
+	var eleObject={"indexToData":"011","xValue":"11:00","yValue":"56","type":"blue"};
+	var twObject={"indexToData":"012","xValue":"12:00","yValue":"72","type":"blue"};
+	var data=[oneObject,twoObject,threeObject,fourObject,fiveObject,
+			 sixObject,sevenObject,eightObject,nineObject,tenObject,eleObject,twObject];
 
-//全局变量(待改进：1，basicCanvas的宽度和高度最好设置为质数，可防止最后一个刻度在边界导致数据矩形没地方画画（方法不唯一）)
-var OuterCanvas;//坐标画布
-var OuterContext;//坐标画布上下文
-var BasicCanvas;//数据画布
-var BasicContext;//数据画布上下文
-var point={"x":"-1","y":"-1"};//鼠标坐标
-var Times=10;//更新时间间隔
-var HelperLineWidth=10;//辅助线小段长度
-var XIndex=0;//x轴刻度间隔
-var XLast=0;//x轴最后刻度和画布之间的间隔（若小于XIndex/4，则数据矩形的宽度为2*XLast)
-var YIndex=0;//y轴刻度间隔
-var ImgData;//主业务图像数据缓存
-var DataColor="pink";//数据矩形的颜色
-var DataLineColor="blue";//数据线的颜色
-var LinePoints= new Array();;//所有数据矩形点集合
-var TipsWidth=90;//信息提示框宽度
-var TipsHeight=30;//信息提示框高度
-var TipsColor="red";//信息提示字体颜色
-var LineWidth=2;//提示线宽度
-var CircleR=5;//突出点半径
-var ChangeName="X";//递变的坐标轴
-var ChangeIndex="10";//递变量（像素）
-var Deviation=0.1;//允许存在的误差
+	//全局变量(待改进：1，basicCanvas的宽度和高度最好设置为质数，可防止最后一个刻度在边界导致数据矩形没地方画画（方法不唯一）)
+	var OuterCanvas;//坐标画布
+	var OuterContext;//坐标画布上下文
+	var BasicCanvas;//数据画布
+	var BasicContext;//数据画布上下文
+	var point={"x":"-1","y":"-1"};//鼠标坐标
+	var Times=10;//更新时间间隔
+	var HelperLineWidth=10;//辅助线小段长度
+	var XIndex=0;//x轴刻度间隔
+	var XLast=0;//x轴最后刻度和画布之间的间隔（若小于XIndex/4，则数据矩形的宽度为2*XLast)
+	var YIndex=0;//y轴刻度间隔
+	var ImgData;//主业务图像数据缓存
+	var DataColor="pink";//数据矩形的颜色
+	var DataLineColor="blue";//数据线的颜色
+	var LinePoints= new Array();;//所有数据矩形点集合
+	var TipsWidth=90;//信息提示框宽度
+	var TipsHeight=30;//信息提示框高度
+	var TipsColor="red";//信息提示字体颜色
+	var LineWidth=2;//提示线宽度
+	var CircleR=5;//突出点半径
+	var ChangeName="X";//递变的坐标轴
+	var ChangeIndex="10";//递变量（像素）
+	var Deviation=0.1;//允许存在的误差
 
-$(window).ready(function(){
-	BasicCanvas=document.querySelector("#basicCanvas");
-	BasicContext=BasicCanvas.getContext("2d");
-	OuterCanvas=document.querySelector("#outerCanvas");
-	OuterContext=OuterCanvas.getContext("2d");
-	drawXy();
-	drawData();
-	ImgData=BasicContext.getImageData(0,0,BasicCanvas.width,BasicCanvas.height);
-	getMousePoint();
-	$("#goToStart").click(function(){
-		goToStart();
+	$(window).ready(function(){
+		BasicCanvas=document.querySelector("#basicCanvas");
+		BasicContext=BasicCanvas.getContext("2d");
+		OuterCanvas=document.querySelector("#outerCanvas");
+		OuterContext=OuterCanvas.getContext("2d");
+		drawXy();
+		drawData();
+		ImgData=BasicContext.getImageData(0,0,BasicCanvas.width,BasicCanvas.height);
+		getMousePoint();
+		$("#goToStart").click(function(){
+			goToStart();
+		});
+		$("#goToEnd").click(function(){
+			goToEnd();
+		});
+		$("#goTo").click(function(){
+			goTo();
+		});
+		$("#pointTo").click(function(){
+			pointTo();
+		});
+		$("#closeTo").click(function(){
+			closeTo();
+		});
+		$("#nextTo").click(function(){
+			nextTo();
+		});
+		//组成数据点下拉框
+		$("#linePointsIndex").html(selectBylinePoints());
+		$("#add").attr("value",ChangeName+"+"+ChangeIndex);
+		$("#reduce").attr("value",ChangeName+"-"+ChangeIndex);
+		$("#add").click(function(){
+			add();
+		});
+		$("#reduce").click(function(){
+			reduce();
+		});
+		setInterval(drawHelperLine,Times);
 	});
-	$("#goToEnd").click(function(){
-		goToEnd();
-	});
-	$("#goTo").click(function(){
-		goTo();
-	});
-	$("#pointTo").click(function(){
-		pointTo();
-	});
-	$("#closeTo").click(function(){
-		closeTo();
-	});
-	$("#nextTo").click(function(){
-		nextTo();
-	});
-	//组成数据点下拉框
-	$("#linePointsIndex").html(selectBylinePoints());
-	$("#add").attr("value",ChangeName+"+"+ChangeIndex);
-	$("#reduce").attr("value",ChangeName+"-"+ChangeIndex);
-	$("#add").click(function(){
-		add();
-	});
-	$("#reduce").click(function(){
-		reduce();
-	});
-	setInterval(drawHelperLine,Times);
-});
-//(add)根据坐标和参数递增坐标
-function add(){
-	if(ChangeName!=null&&ChangeName!=''&&ChangeIndex!=null&&ChangeIndex>=0&&LinePoints.length>0){
-		var tempPoint={"x":"-1","y":"-1"};
-		if(ChangeName=='X'||ChangeName=='x'){
-			tempPoint.x=point.x+parseInt(ChangeIndex);
-			if(tempPoint.x>LinePoints[LinePoints.length-1].x){
-				tempPoint.x=LinePoints[LinePoints.length-1].x;
-			}
-			//判断递增后的坐标的区间
-			for(var i=0;i<LinePoints.length-1;i++){
-				if(tempPoint.x>=LinePoints[i].x&&tempPoint.x<=LinePoints[i+1].x){
-					//根据该区间的方程，得到y值
-					var ki=(LinePoints[i+1].y-LinePoints[i].y)/(LinePoints[i+1].x-LinePoints[i].x);
-					var bi=LinePoints[i+1].y-ki*LinePoints[i+1].x;
-					tempPoint.y=parseInt(ki*tempPoint.x+bi);
-					break;
+	//(add)根据坐标和参数递增坐标
+	function add(){
+		if(ChangeName!=null&&ChangeName!=''&&ChangeIndex!=null&&ChangeIndex>=0&&LinePoints.length>0){
+			var tempPoint={"x":"-1","y":"-1"};
+			if(ChangeName=='X'||ChangeName=='x'){
+				tempPoint.x=point.x+parseInt(ChangeIndex);
+				if(tempPoint.x>LinePoints[LinePoints.length-1].x){
+					tempPoint.x=LinePoints[LinePoints.length-1].x;
 				}
-			}
-		}else{
-			//由于y轴递增，可能有多个x值的解，画辅助线的设计没考虑到这点，不做处理了！
-		}
-		if(tempPoint.x>=0&&tempPoint.y>=0){
-			point.x=tempPoint.x;
-			point.y=tempPoint.y;
-		}
-	}
-}
-//(reduce)根据坐标和参数递减坐标
-function reduce(){
-	if(ChangeName!=null&&ChangeName!=''&&ChangeIndex!=null&&ChangeIndex>=0&&LinePoints.length>0){
-		var tempPoint={"x":"-1","y":"-1"};
-		if(ChangeName=='X'||ChangeName=='x'){
-			tempPoint.x=point.x-parseInt(ChangeIndex);
-			if(tempPoint.x<LinePoints[0].x){
-				tempPoint.x=LinePoints[0].x;
-			}
-			//判断递减后的坐标的区间
-			for(var i=0;i<LinePoints.length-1;i++){
-				if(tempPoint.x>=LinePoints[i].x&&tempPoint.x<=LinePoints[i+1].x){
-					//根据该区间的方程，得到y值
-					var ki=(LinePoints[i+1].y-LinePoints[i].y)/(LinePoints[i+1].x-LinePoints[i].x);
-					var bi=LinePoints[i+1].y-ki*LinePoints[i+1].x;
-					tempPoint.y=parseInt(ki*tempPoint.x+bi);
-					break;
+				//判断递增后的坐标的区间
+				for(var i=0;i<LinePoints.length-1;i++){
+					if(tempPoint.x>=LinePoints[i].x&&tempPoint.x<=LinePoints[i+1].x){
+						//根据该区间的方程，得到y值
+						var ki=(LinePoints[i+1].y-LinePoints[i].y)/(LinePoints[i+1].x-LinePoints[i].x);
+						var bi=LinePoints[i+1].y-ki*LinePoints[i+1].x;
+						tempPoint.y=parseInt(ki*tempPoint.x+bi);
+						break;
+					}
 				}
+			}else{
+				//由于y轴递增，可能有多个x值的解，画辅助线的设计没考虑到这点，不做处理了！
 			}
-		}else{
-			//由于y轴递减，可能有多个x值的解，画辅助线的设计没考虑到这点，不做处理了！
-		}
-		if(tempPoint.x>=0&&tempPoint.y>=0){
-			point.x=tempPoint.x;
-			point.y=tempPoint.y;
+			if(tempPoint.x>=0&&tempPoint.y>=0){
+				point.x=tempPoint.x;
+				point.y=tempPoint.y;
+			}
 		}
 	}
-}
-//（nextTo）移动到下一数据点
-function nextTo(){
-	var options = document.querySelector("#linePointsIndex").options;
-	var length = options.length;    
-    for(var i = 0; i < length-1; i++){    
-        if(options[i].selected == true){    
-			options[i+1].selected=true;
-			break;
-        }    
-   }    
-   pointTo();
-}
-//（pointTo）移动到某一数据点
-function pointTo(){
-	var options = document.querySelector("#linePointsIndex").options;
-	var length = options.length;    
-    for(var i = 0; i < length; i++){    
-        if(options[i].selected == true){    
-			point.x=LinePoints[options[i].value].x;
-			point.y=LinePoints[options[i].value].y;
-        }    
-   }    
-}
-//根据LinePoints生成数据点下拉框
-function selectBylinePoints(){
-	var selectHtml='';
-	if(LinePoints.length>0){
-		for(var i=0;i<LinePoints.length;i++){
-			selectHtml+='<option value="'+i+'">'+LinePoints[i].x+' '+LinePoints[i].y+'</option>'
+	//(reduce)根据坐标和参数递减坐标
+	function reduce(){
+		if(ChangeName!=null&&ChangeName!=''&&ChangeIndex!=null&&ChangeIndex>=0&&LinePoints.length>0){
+			var tempPoint={"x":"-1","y":"-1"};
+			if(ChangeName=='X'||ChangeName=='x'){
+				tempPoint.x=point.x-parseInt(ChangeIndex);
+				if(tempPoint.x<LinePoints[0].x){
+					tempPoint.x=LinePoints[0].x;
+				}
+				//判断递减后的坐标的区间
+				for(var i=0;i<LinePoints.length-1;i++){
+					if(tempPoint.x>=LinePoints[i].x&&tempPoint.x<=LinePoints[i+1].x){
+						//根据该区间的方程，得到y值
+						var ki=(LinePoints[i+1].y-LinePoints[i].y)/(LinePoints[i+1].x-LinePoints[i].x);
+						var bi=LinePoints[i+1].y-ki*LinePoints[i+1].x;
+						tempPoint.y=parseInt(ki*tempPoint.x+bi);
+						break;
+					}
+				}
+			}else{
+				//由于y轴递减，可能有多个x值的解，画辅助线的设计没考虑到这点，不做处理了！
+			}
+			if(tempPoint.x>=0&&tempPoint.y>=0){
+				point.x=tempPoint.x;
+				point.y=tempPoint.y;
+			}
 		}
 	}
-	return selectHtml;
-}
-//（closeTo）移动到最近的数据点
-function closeTo(){
-	if(point.x!=null&&point.y!=null&&point.x>=0&&point.y>=0){
+	//（nextTo）移动到下一数据点
+	function nextTo(){
+		var options = document.querySelector("#linePointsIndex").options;
+		var length = options.length;    
+	    for(var i = 0; i < length-1; i++){    
+	        if(options[i].selected == true){    
+				options[i+1].selected=true;
+				break;
+	        }    
+	   }    
+	   pointTo();
+	}
+	//（pointTo）移动到某一数据点
+	function pointTo(){
+		var options = document.querySelector("#linePointsIndex").options;
+		var length = options.length;    
+	    for(var i = 0; i < length; i++){    
+	        if(options[i].selected == true){    
+				point.x=LinePoints[options[i].value].x;
+				point.y=LinePoints[options[i].value].y;
+	        }    
+	   }    
+	}
+	//根据LinePoints生成数据点下拉框
+	function selectBylinePoints(){
+		var selectHtml='';
 		if(LinePoints.length>0){
-			//计算该点与所有数据区间的最小距离（其实可以根据其他信息缩小计算空间）
-			var tempPointArray=new Array();//存放该点和每段区间的最近点坐标
-			tempPointArray.length=LinePoints.length-1;
-			var tempMinLength=new Array();//存放该点和每段区间的最近点坐标的距离
-			tempMinLength.length=LinePoints.length;
-			for(var i=0;i<LinePoints.length-1;i++){
-				tempPointArray[i]=mathClosePoint(i);
-				if(tempPointArray[i].x>=0&&tempPointArray[i].y>=0){
-					tempMinLength[i]=Math.sqrt((point.x-tempPointArray[i].x)*(point.x-tempPointArray[i].x)+(point.y-tempPointArray[i].y)*(point.y-tempPointArray[i].y));
-				}else{
-					tempMinLength[i]=Math.sqrt((point.x-LinePoints[i].x)*(point.x-LinePoints[i].x)+(point.y-LinePoints[i].y)*(point.y-LinePoints[i].y));
-				}
+			for(var i=0;i<LinePoints.length;i++){
+				selectHtml+='<option value="'+i+'">'+LinePoints[i].x+' '+LinePoints[i].y+'</option>'
 			}
-			tempMinLength[LinePoints.length-1]=Math.sqrt((point.x-LinePoints[LinePoints.length-1].x)*(point.x-LinePoints[LinePoints.length-1].x)+(point.y-LinePoints[LinePoints.length-1].y)*(point.y-LinePoints[LinePoints.length-1].y));
-			//找到最小距离
-			var tempMinFinal=tempMinLength[0];
-			var tempMinIndex=0;
-			for(var i=1;i<tempMinLength.length;i++){
-				if(tempMinLength[i]<tempMinFinal){
-					tempMinFinal=tempMinLength[i];
-					tempMinIndex=i;
+		}
+		return selectHtml;
+	}
+	//（closeTo）移动到最近的数据点
+	function closeTo(){
+		if(point.x!=null&&point.y!=null&&point.x>=0&&point.y>=0){
+			if(LinePoints.length>0){
+				//计算该点与所有数据区间的最小距离（其实可以根据其他信息缩小计算空间）
+				var tempPointArray=new Array();//存放该点和每段区间的最近点坐标
+				tempPointArray.length=LinePoints.length-1;
+				var tempMinLength=new Array();//存放该点和每段区间的最近点坐标的距离
+				tempMinLength.length=LinePoints.length;
+				for(var i=0;i<LinePoints.length-1;i++){
+					tempPointArray[i]=mathClosePoint(i);
+					if(tempPointArray[i].x>=0&&tempPointArray[i].y>=0){
+						tempMinLength[i]=Math.sqrt((point.x-tempPointArray[i].x)*(point.x-tempPointArray[i].x)+(point.y-tempPointArray[i].y)*(point.y-tempPointArray[i].y));
+					}else{
+						tempMinLength[i]=Math.sqrt((point.x-LinePoints[i].x)*(point.x-LinePoints[i].x)+(point.y-LinePoints[i].y)*(point.y-LinePoints[i].y));
+					}
 				}
-			}
-			if(tempMinIndex<tempMinLength.length-1){
-				if(tempPointArray[tempMinIndex].x>=0&&tempPointArray[tempMinIndex].y>=0){
-					point.x=tempPointArray[tempMinIndex].x;
-					point.y=tempPointArray[tempMinIndex].y;
+				tempMinLength[LinePoints.length-1]=Math.sqrt((point.x-LinePoints[LinePoints.length-1].x)*(point.x-LinePoints[LinePoints.length-1].x)+(point.y-LinePoints[LinePoints.length-1].y)*(point.y-LinePoints[LinePoints.length-1].y));
+				//找到最小距离
+				var tempMinFinal=tempMinLength[0];
+				var tempMinIndex=0;
+				for(var i=1;i<tempMinLength.length;i++){
+					if(tempMinLength[i]<tempMinFinal){
+						tempMinFinal=tempMinLength[i];
+						tempMinIndex=i;
+					}
+				}
+				if(tempMinIndex<tempMinLength.length-1){
+					if(tempPointArray[tempMinIndex].x>=0&&tempPointArray[tempMinIndex].y>=0){
+						point.x=tempPointArray[tempMinIndex].x;
+						point.y=tempPointArray[tempMinIndex].y;
+					}else{
+						point.x=LinePoints[tempMinIndex].x;
+						point.y=LinePoints[tempMinIndex].y;
+					}
 				}else{
 					point.x=LinePoints[tempMinIndex].x;
 					point.y=LinePoints[tempMinIndex].y;
 				}
+			} 
+		}
+	}
+	//根据区间数计算该点在该区间线段上最靠近的点
+	function mathClosePoint(qIndex){
+		if(point.x>=0&&point.y>=0&&qIndex>=0&&LinePoints.length>0){
+			var ki=(LinePoints[qIndex+1].y-LinePoints[qIndex].y)/(LinePoints[qIndex+1].x-LinePoints[qIndex].x);
+			var bi=LinePoints[qIndex+1].y-ki*LinePoints[qIndex+1].x;
+			var ko=-(1/ki);
+			var bo=point.y-ko*point.x;
+			console.log("区间:"+qIndex);
+			console.log("y="+ki+"x+"+bi);
+			console.log("y="+ko+"x+"+bo);
+			var closeToX=parseInt((bo-bi)/(ki-ko));
+			var closeToY=parseInt(ki*closeToX+bi);
+			var tempPoint={"x":"-1","y":"-1"};
+			//取得该区间的y轴最大值和最小值
+			var yMax=0;
+			var yMin=0;
+			if(LinePoints[qIndex+1].y>LinePoints[qIndex].y){
+				yMax=LinePoints[qIndex+1].y;
+				yMin=LinePoints[qIndex].y;
 			}else{
-				point.x=LinePoints[tempMinIndex].x;
-				point.y=LinePoints[tempMinIndex].y;
+				yMin=LinePoints[qIndex+1].y;
+				yMax=LinePoints[qIndex].y;
+			}
+			if(closeToX>=LinePoints[qIndex].x&&closeToX<=LinePoints[qIndex+1].x&&closeToY>=yMin&&closeToY<=yMax){
+				console.log("closeToX:"+closeToX);
+				console.log("closeToY:"+closeToY);
+				tempPoint.x=closeToX;
+				tempPoint.y=closeToY;
+			}
+			return tempPoint;
+		}
+	}
+	//（goTo）去特定坐标点
+	function goTo(){
+		var tempX=$("#xValue").val();
+		var tempY=$("#yValue").val();
+		if(tempX!=null&&tempY!=null&&tempX!=''&&tempY!=''){
+			if(tempX>=0&&tempX<=BasicCanvas.width&&tempY>=0&&tempY<=BasicCanvas.height){
+				point.x=parseInt(tempX);//从input text中取出来的值默认为string类型
+				point.y=parseInt(tempY);
+			}
+		}
+	}
+	//（结尾）去最后一个节点
+	function goToEnd(){
+		if(LinePoints.length>0){
+			point.x=LinePoints[LinePoints.length-1].x;
+			point.y=LinePoints[LinePoints.length-1].y;
+		}
+	}
+	//（开始）去第一个节点
+	function goToStart(){
+		if(LinePoints.length>0){
+			point.x=LinePoints[0].x;
+			point.y=LinePoints[0].y;
+			//console.log("goToStart:"+point.x+" "+point.y);
+		}
+	}
+	//监听鼠标移动，获得最新鼠标坐标
+	function getMousePoint(){
+		$("#basicCanvas").mousemove(function(e){   
+			point.x=e.clientX-e.target.offsetLeft;
+			point.y=e.clientY-e.target.offsetTop;
+		});
+	}
+	//画辅助线(10个像素一段),由于有清除屏幕的操作所以还要重新载入以前的主业务信息
+	function drawHelperLine(){
+		//清除屏幕   
+		BasicContext.clearRect(0, 0, BasicCanvas.width, BasicCanvas.height);   
+		BasicContext.putImageData(ImgData,0,0);
+		BasicContext.save();   
+		BasicContext.beginPath();
+		BasicContext.lineWidth=LineWidth;
+		for(var i=0;i<parseInt(point.x/HelperLineWidth);i=i+2){
+			BasicContext.moveTo(HelperLineWidth*i,point.y);
+			if(HelperLineWidth*(i+1)<point.x){
+				BasicContext.lineTo(HelperLineWidth*(i+1),point.y);
+			}else{
+				BasicContext.lineTo(point.x,point.y);
+			}
+		}
+		for(var i=0;i<parseInt((BasicCanvas.height-point.y)/HelperLineWidth);i=i+2){
+			BasicContext.moveTo(point.x,point.y+HelperLineWidth*i);
+			if(point.y+HelperLineWidth*(i+1)<BasicCanvas.height){
+				BasicContext.lineTo(point.x,point.y+HelperLineWidth*(i+1));
+			}else{
+				BasicContext.lineTo(point.x,BasicCanvas.height);
+			}
+		}
+		//计算当前坐标所代表的业务数据
+		var y=parseInt((BasicCanvas.height-point.y)/YIndex);
+		var nowYValue;
+		if(y>0){
+			nowYValue=parseInt(yAxis[y])+parseFloat(startPoint.yKey*(yAxis[y+1]-yAxis[y])*((BasicCanvas.height-point.y)-y*YIndex)/YIndex);
+		}else{
+			nowYValue=0+parseFloat(startPoint.yKey*(yAxis[y+1]-0)*((BasicCanvas.height-point.y)-y*YIndex)/YIndex);
+		}
+		var x=parseInt(point.x/XIndex);
+		var nowXValue;
+		if(x>0){
+			nowXValue=xAxis[x].substr(0,3);
+		}else{
+			nowXValue=startPoint.xValue.substr(0,3);
+		}
+		var minM=parseInt(startPoint.xKey*(point.x-x*XIndex-Deviation)/XIndex);
+		var maxM=parseInt(startPoint.xKey*(point.x-x*XIndex+Deviation)/XIndex);
+		//画提示信息(‘6’，‘2’，‘3’都是画提示框的常数)
+		BasicContext.moveTo(point.x,point.y);
+		BasicContext.lineTo(point.x+parseInt(TipsWidth/6),point.y-parseInt(TipsHeight/3));
+		BasicContext.moveTo(point.x+parseInt(TipsWidth/6),point.y-parseInt(TipsHeight/3));
+		BasicContext.lineTo(point.x+parseInt(TipsWidth/2),point.y-parseInt(TipsHeight/3));
+		BasicContext.moveTo(point.x+parseInt(TipsWidth/2),point.y-parseInt(TipsHeight/3));
+		BasicContext.lineTo(point.x+parseInt(TipsWidth/2),point.y-TipsHeight);
+		BasicContext.moveTo(point.x,point.y);
+		BasicContext.lineTo(point.x-parseInt(TipsWidth/6),point.y-parseInt(TipsHeight/3));
+		BasicContext.moveTo(point.x-parseInt(TipsWidth/6),point.y-parseInt(TipsHeight/3));
+		BasicContext.lineTo(point.x-parseInt(TipsWidth/2),point.y-parseInt(TipsHeight/3));
+		BasicContext.moveTo(point.x-parseInt(TipsWidth/2),point.y-parseInt(TipsHeight/3));
+		BasicContext.lineTo(point.x-parseInt(TipsWidth/2),point.y-TipsHeight);
+		BasicContext.moveTo(point.x-parseInt(TipsWidth/2),point.y-TipsHeight);
+		BasicContext.fillStyle=TipsColor;
+		//由于允许误差的存在，所以这里应该是个范围值
+		BasicContext.fillText(xAxis[0]+":"+nowXValue+minM+"~"+nowXValue+maxM,point.x-parseInt(TipsWidth/2),point.y-parseInt(TipsHeight/3*2),TipsWidth+TipsHeight);
+		BasicContext.fillText(yAxis[0]+":"+(nowYValue-Deviation).toFixed(2)+"~"+(nowYValue+Deviation).toFixed(2),point.x-parseInt(TipsWidth/2),point.y-parseInt(TipsHeight/3*1),TipsWidth+TipsHeight);
+		BasicContext.lineTo(point.x+parseInt(TipsWidth/2),point.y-TipsHeight);
+		//画高亮信息
+		//当鼠标移动到当前点时，该点突出显示
+		for(var i=0;i<LinePoints.length;i++){
+			if(Math.abs(point.x-LinePoints[i].x)<=Deviation&&Math.abs(point.y-LinePoints[i].y)<=Deviation){
+				BasicContext.moveTo(point.x,point.y);
+				BasicContext.arc(point.x,point.y,CircleR,0,2*Math.PI);
+			}
+		}
+		//判断该点是否在数据矩形点集合组成的线段上
+		if(LinePoints.length>0){
+			for(var i=0;i<LinePoints.length-1;i++){
+				if(point.x>=LinePoints[i].x&&point.x<LinePoints[i+1].x){
+					//是否是线上的点(由于鼠标坐标只能是整数，所以要考虑误差的存在)
+					if(Math.abs((point.y-LinePoints[i].y)/(point.x-LinePoints[i].x)-(LinePoints[i+1].y-point.y)/(LinePoints[i+1].x-point.x))<=Deviation){
+						BasicContext.moveTo(LinePoints[i].x,LinePoints[i].y);
+						BasicContext.lineTo(LinePoints[i+1].x,LinePoints[i+1].y);
+						break;
+					}
+				}
 			}
 		} 
+		document.querySelector("#point").innerHTML=point.x+" "+point.y;
+		BasicContext.stroke();
+		BasicContext.closePath();
+		BasicContext.fill();
+		BasicContext.restore();  
 	}
-}
-//根据区间数计算该点在该区间线段上最靠近的点
-function mathClosePoint(qIndex){
-	if(point.x>=0&&point.y>=0&&qIndex>=0&&LinePoints.length>0){
-		var ki=(LinePoints[qIndex+1].y-LinePoints[qIndex].y)/(LinePoints[qIndex+1].x-LinePoints[qIndex].x);
-		var bi=LinePoints[qIndex+1].y-ki*LinePoints[qIndex+1].x;
-		var ko=-(1/ki);
-		var bo=point.y-ko*point.x;
-		console.log("区间:"+qIndex);
-		console.log("y="+ki+"x+"+bi);
-		console.log("y="+ko+"x+"+bo);
-		var closeToX=parseInt((bo-bi)/(ki-ko));
-		var closeToY=parseInt(ki*closeToX+bi);
-		var tempPoint={"x":"-1","y":"-1"};
-		//取得该区间的y轴最大值和最小值
-		var yMax=0;
-		var yMin=0;
-		if(LinePoints[qIndex+1].y>LinePoints[qIndex].y){
-			yMax=LinePoints[qIndex+1].y;
-			yMin=LinePoints[qIndex].y;
-		}else{
-			yMin=LinePoints[qIndex+1].y;
-			yMax=LinePoints[qIndex].y;
-		}
-		if(closeToX>=LinePoints[qIndex].x&&closeToX<=LinePoints[qIndex+1].x&&closeToY>=yMin&&closeToY<=yMax){
-			console.log("closeToX:"+closeToX);
-			console.log("closeToY:"+closeToY);
-			tempPoint.x=closeToX;
-			tempPoint.y=closeToY;
-		}
-		return tempPoint;
-	}
-}
-//（goTo）去特定坐标点
-function goTo(){
-	var tempX=$("#xValue").val();
-	var tempY=$("#yValue").val();
-	if(tempX!=null&&tempY!=null&&tempX!=''&&tempY!=''){
-		if(tempX>=0&&tempX<=BasicCanvas.width&&tempY>=0&&tempY<=BasicCanvas.height){
-			point.x=parseInt(tempX);//从input text中取出来的值默认为string类型
-			point.y=parseInt(tempY);
-		}
-	}
-}
-//（结尾）去最后一个节点
-function goToEnd(){
-	if(LinePoints.length>0){
-		point.x=LinePoints[LinePoints.length-1].x;
-		point.y=LinePoints[LinePoints.length-1].y;
-	}
-}
-//（开始）去第一个节点
-function goToStart(){
-	if(LinePoints.length>0){
-		point.x=LinePoints[0].x;
-		point.y=LinePoints[0].y;
-		//console.log("goToStart:"+point.x+" "+point.y);
-	}
-}
-//监听鼠标移动，获得最新鼠标坐标
-function getMousePoint(){
-	$("#basicCanvas").mousemove(function(e){   
-		point.x=e.clientX-e.target.offsetLeft;
-		point.y=e.clientY-e.target.offsetTop;
-	});
-}
-//画辅助线(10个像素一段),由于有清除屏幕的操作所以还要重新载入以前的主业务信息
-function drawHelperLine(){
-	//清除屏幕   
-	BasicContext.clearRect(0, 0, BasicCanvas.width, BasicCanvas.height);   
-	BasicContext.putImageData(ImgData,0,0);
-	BasicContext.save();   
-	BasicContext.beginPath();
-	BasicContext.lineWidth=LineWidth;
-	for(var i=0;i<parseInt(point.x/HelperLineWidth);i=i+2){
-		BasicContext.moveTo(HelperLineWidth*i,point.y);
-		if(HelperLineWidth*(i+1)<point.x){
-			BasicContext.lineTo(HelperLineWidth*(i+1),point.y);
-		}else{
-			BasicContext.lineTo(point.x,point.y);
-		}
-	}
-	for(var i=0;i<parseInt((BasicCanvas.height-point.y)/HelperLineWidth);i=i+2){
-		BasicContext.moveTo(point.x,point.y+HelperLineWidth*i);
-		if(point.y+HelperLineWidth*(i+1)<BasicCanvas.height){
-			BasicContext.lineTo(point.x,point.y+HelperLineWidth*(i+1));
-		}else{
-			BasicContext.lineTo(point.x,BasicCanvas.height);
-		}
-	}
-	//计算当前坐标所代表的业务数据
-	var y=parseInt((BasicCanvas.height-point.y)/YIndex);
-	var nowYValue;
-	if(y>0){
-		nowYValue=parseInt(yAxis[y])+parseFloat(startPoint.yKey*(yAxis[y+1]-yAxis[y])*((BasicCanvas.height-point.y)-y*YIndex)/YIndex);
-	}else{
-		nowYValue=0+parseFloat(startPoint.yKey*(yAxis[y+1]-0)*((BasicCanvas.height-point.y)-y*YIndex)/YIndex);
-	}
-	var x=parseInt(point.x/XIndex);
-	var nowXValue;
-	if(x>0){
-		nowXValue=xAxis[x].substr(0,3);
-	}else{
-		nowXValue=startPoint.xValue.substr(0,3);
-	}
-	var minM=parseInt(startPoint.xKey*(point.x-x*XIndex-Deviation)/XIndex);
-	var maxM=parseInt(startPoint.xKey*(point.x-x*XIndex+Deviation)/XIndex);
-	//画提示信息(‘6’，‘2’，‘3’都是画提示框的常数)
-	BasicContext.moveTo(point.x,point.y);
-	BasicContext.lineTo(point.x+parseInt(TipsWidth/6),point.y-parseInt(TipsHeight/3));
-	BasicContext.moveTo(point.x+parseInt(TipsWidth/6),point.y-parseInt(TipsHeight/3));
-	BasicContext.lineTo(point.x+parseInt(TipsWidth/2),point.y-parseInt(TipsHeight/3));
-	BasicContext.moveTo(point.x+parseInt(TipsWidth/2),point.y-parseInt(TipsHeight/3));
-	BasicContext.lineTo(point.x+parseInt(TipsWidth/2),point.y-TipsHeight);
-	BasicContext.moveTo(point.x,point.y);
-	BasicContext.lineTo(point.x-parseInt(TipsWidth/6),point.y-parseInt(TipsHeight/3));
-	BasicContext.moveTo(point.x-parseInt(TipsWidth/6),point.y-parseInt(TipsHeight/3));
-	BasicContext.lineTo(point.x-parseInt(TipsWidth/2),point.y-parseInt(TipsHeight/3));
-	BasicContext.moveTo(point.x-parseInt(TipsWidth/2),point.y-parseInt(TipsHeight/3));
-	BasicContext.lineTo(point.x-parseInt(TipsWidth/2),point.y-TipsHeight);
-	BasicContext.moveTo(point.x-parseInt(TipsWidth/2),point.y-TipsHeight);
-	BasicContext.fillStyle=TipsColor;
-	//由于允许误差的存在，所以这里应该是个范围值
-	BasicContext.fillText(xAxis[0]+":"+nowXValue+minM+"~"+nowXValue+maxM,point.x-parseInt(TipsWidth/2),point.y-parseInt(TipsHeight/3*2),TipsWidth+TipsHeight);
-	BasicContext.fillText(yAxis[0]+":"+(nowYValue-Deviation).toFixed(2)+"~"+(nowYValue+Deviation).toFixed(2),point.x-parseInt(TipsWidth/2),point.y-parseInt(TipsHeight/3*1),TipsWidth+TipsHeight);
-	BasicContext.lineTo(point.x+parseInt(TipsWidth/2),point.y-TipsHeight);
-	//画高亮信息
-	//当鼠标移动到当前点时，该点突出显示
-	for(var i=0;i<LinePoints.length;i++){
-		if(Math.abs(point.x-LinePoints[i].x)<=Deviation&&Math.abs(point.y-LinePoints[i].y)<=Deviation){
-			BasicContext.moveTo(point.x,point.y);
-			BasicContext.arc(point.x,point.y,CircleR,0,2*Math.PI);
-		}
-	}
-	//判断该点是否在数据矩形点集合组成的线段上
-	if(LinePoints.length>0){
-		for(var i=0;i<LinePoints.length-1;i++){
-			if(point.x>=LinePoints[i].x&&point.x<LinePoints[i+1].x){
-				//是否是线上的点(由于鼠标坐标只能是整数，所以要考虑误差的存在)
-				if(Math.abs((point.y-LinePoints[i].y)/(point.x-LinePoints[i].x)-(LinePoints[i+1].y-point.y)/(LinePoints[i+1].x-point.x))<=Deviation){
-					BasicContext.moveTo(LinePoints[i].x,LinePoints[i].y);
-					BasicContext.lineTo(LinePoints[i+1].x,LinePoints[i+1].y);
+	//绘制主要业务数据
+	function drawData(){
+		BasicContext.save();   
+		BasicContext.beginPath();
+		for(var i=0;i<data.length;i++){
+			var leftPoint={"x":"-1","y":"-1"};//数据矩形左上角
+			var centerPoint={"x":"-1","y":"-1"};//数据矩形中点
+			var dataHeight=0;//数据矩形的高度
+			if(XLast<=parseInt(XIndex/4)){
+				var dataWidth=2*XLast;//数据矩形的宽度
+			}else{
+				var dataWidth=parseInt(XIndex/2);//数据矩形的宽度
+			}
+			for(var j=1;j<xAxis.length;j++){
+				if(data[i].xValue==xAxis[j]){
+					centerPoint.x=j*XIndex;
+					leftPoint.x=j*XIndex-parseInt(dataWidth/2);
+				}
+			}
+			for(var j=1;j<yAxis.length;j++){
+				if(data[i].yValue<=yAxis[j]){
+					dataHeight=parseInt((j-1)*YIndex+(data[i].yValue-yAxis[j-1])*YIndex/(yAxis[j]-yAxis[j-1]));
+					leftPoint.y=BasicCanvas.height-dataHeight;
+					centerPoint.y=leftPoint.y;
 					break;
 				}
 			}
+			BasicContext.fillStyle=DataColor;//数据矩形粉红色
+			BasicContext.fillRect(leftPoint.x,leftPoint.y,dataWidth,dataHeight);
+			//记录数据点
+			LinePoints.push(centerPoint);
 		}
-	} 
-	document.querySelector("#point").innerHTML=point.x+" "+point.y;
-	BasicContext.stroke();
-	BasicContext.closePath();
-	BasicContext.fill();
-	BasicContext.restore();  
-}
-//绘制主要业务数据
-function drawData(){
-	BasicContext.save();   
-	BasicContext.beginPath();
-	for(var i=0;i<data.length;i++){
-		var leftPoint={"x":"-1","y":"-1"};//数据矩形左上角
-		var centerPoint={"x":"-1","y":"-1"};//数据矩形中点
-		var dataHeight=0;//数据矩形的高度
-		if(XLast<=parseInt(XIndex/4)){
-			var dataWidth=2*XLast;//数据矩形的宽度
-		}else{
-			var dataWidth=parseInt(XIndex/2);//数据矩形的宽度
+		//画数据线段
+		for(var i=0;i<LinePoints.length-1;i++){
+			BasicContext.strokeStyle=DataLineColor;
+			BasicContext.moveTo(LinePoints[i].x,LinePoints[i].y);
+			BasicContext.lineTo(LinePoints[i+1].x,LinePoints[i+1].y);
 		}
-		for(var j=1;j<xAxis.length;j++){
-			if(data[i].xValue==xAxis[j]){
-				centerPoint.x=j*XIndex;
-				leftPoint.x=j*XIndex-parseInt(dataWidth/2);
-			}
+		BasicContext.stroke();
+		BasicContext.closePath();
+		BasicContext.restore();   
+	}
+	//根据业务数据画坐标(方法中的数字'20','10'是根据2个canvas之间的距离决定的)
+	function drawXy(){
+		//清除屏幕   
+		OuterContext.clearRect(0, 0, OuterCanvas.width, OuterCanvas.height);   
+		OuterContext.save();   
+		OuterContext.beginPath();
+		//先画2条坐标轴(以及箭头指示)
+		OuterContext.moveTo(20,BasicCanvas.height+20);
+		OuterContext.lineTo(BasicCanvas.width+20+10,BasicCanvas.height+20);
+		OuterContext.moveTo(BasicCanvas.width+20+10,BasicCanvas.height+20);
+		OuterContext.lineTo(BasicCanvas.width+20+10-10,BasicCanvas.height+20-6);
+		OuterContext.moveTo(BasicCanvas.width+20+10,BasicCanvas.height+20);
+		OuterContext.lineTo(BasicCanvas.width+20+10-10,BasicCanvas.height+20+6);
+		OuterContext.moveTo(20,BasicCanvas.height+20);
+		OuterContext.lineTo(20,10);
+		OuterContext.moveTo(20,10);
+		OuterContext.lineTo(20+6,10+10);
+		OuterContext.moveTo(20,10);
+		OuterContext.lineTo(20-6,10+10);
+		//根据业务数据处理刻度
+		OuterContext.textAlign='center';//文字居中
+		OuterContext.fillText(xAxis[0],BasicCanvas.width+20+10,BasicCanvas.height+20+6+10,100);
+		OuterContext.fillText(yAxis[0],20+5,10,100);
+		XIndex=parseInt(BasicCanvas.width/(xAxis.length-1));//(js中’/‘竟然不是整除的意思)
+		XLast=BasicCanvas.width-XIndex*(xAxis.length-1);
+		for(var i=1;i<xAxis.length;i++){
+			//画刻度
+			OuterContext.moveTo(XIndex*i+20,BasicCanvas.height+20);
+			OuterContext.lineTo(XIndex*i+20,BasicCanvas.height+20+3);
+			OuterContext.fillText(xAxis[i],XIndex*i+20,BasicCanvas.height+20+3+10,100);
 		}
-		for(var j=1;j<yAxis.length;j++){
-			if(data[i].yValue<=yAxis[j]){
-				dataHeight=parseInt((j-1)*YIndex+(data[i].yValue-yAxis[j-1])*YIndex/(yAxis[j]-yAxis[j-1]));
-				leftPoint.y=BasicCanvas.height-dataHeight;
-				centerPoint.y=leftPoint.y;
-				break;
-			}
+		YIndex=parseInt(BasicCanvas.height/(yAxis.length-1));
+		for(var i=1;i<yAxis.length;i++){
+			//画刻度
+			OuterContext.moveTo(20,BasicCanvas.height+20-YIndex*i);
+			OuterContext.lineTo(20-3,BasicCanvas.height+20-YIndex*i);
+			OuterContext.fillText(yAxis[i],20-3-10,BasicCanvas.height+20-YIndex*i,100);
 		}
-		BasicContext.fillStyle=DataColor;//数据矩形粉红色
-		BasicContext.fillRect(leftPoint.x,leftPoint.y,dataWidth,dataHeight);
-		//记录数据点
-		LinePoints.push(centerPoint);
+		OuterContext.stroke();
+		OuterContext.closePath();
+		OuterContext.restore();   
 	}
-	//画数据线段
-	for(var i=0;i<LinePoints.length-1;i++){
-		BasicContext.strokeStyle=DataLineColor;
-		BasicContext.moveTo(LinePoints[i].x,LinePoints[i].y);
-		BasicContext.lineTo(LinePoints[i+1].x,LinePoints[i+1].y);
-	}
-	BasicContext.stroke();
-	BasicContext.closePath();
-	BasicContext.restore();   
-}
-//根据业务数据画坐标(方法中的数字'20','10'是根据2个canvas之间的距离决定的)
-function drawXy(){
-	//清除屏幕   
-	OuterContext.clearRect(0, 0, OuterCanvas.width, OuterCanvas.height);   
-	OuterContext.save();   
-	OuterContext.beginPath();
-	//先画2条坐标轴(以及箭头指示)
-	OuterContext.moveTo(20,BasicCanvas.height+20);
-	OuterContext.lineTo(BasicCanvas.width+20+10,BasicCanvas.height+20);
-	OuterContext.moveTo(BasicCanvas.width+20+10,BasicCanvas.height+20);
-	OuterContext.lineTo(BasicCanvas.width+20+10-10,BasicCanvas.height+20-6);
-	OuterContext.moveTo(BasicCanvas.width+20+10,BasicCanvas.height+20);
-	OuterContext.lineTo(BasicCanvas.width+20+10-10,BasicCanvas.height+20+6);
-	OuterContext.moveTo(20,BasicCanvas.height+20);
-	OuterContext.lineTo(20,10);
-	OuterContext.moveTo(20,10);
-	OuterContext.lineTo(20+6,10+10);
-	OuterContext.moveTo(20,10);
-	OuterContext.lineTo(20-6,10+10);
-	//根据业务数据处理刻度
-	OuterContext.textAlign='center';//文字居中
-	OuterContext.fillText(xAxis[0],BasicCanvas.width+20+10,BasicCanvas.height+20+6+10,100);
-	OuterContext.fillText(yAxis[0],20+5,10,100);
-	XIndex=parseInt(BasicCanvas.width/(xAxis.length-1));//(js中’/‘竟然不是整除的意思)
-	XLast=BasicCanvas.width-XIndex*(xAxis.length-1);
-	for(var i=1;i<xAxis.length;i++){
-		//画刻度
-		OuterContext.moveTo(XIndex*i+20,BasicCanvas.height+20);
-		OuterContext.lineTo(XIndex*i+20,BasicCanvas.height+20+3);
-		OuterContext.fillText(xAxis[i],XIndex*i+20,BasicCanvas.height+20+3+10,100);
-	}
-	YIndex=parseInt(BasicCanvas.height/(yAxis.length-1));
-	for(var i=1;i<yAxis.length;i++){
-		//画刻度
-		OuterContext.moveTo(20,BasicCanvas.height+20-YIndex*i);
-		OuterContext.lineTo(20-3,BasicCanvas.height+20-YIndex*i);
-		OuterContext.fillText(yAxis[i],20-3-10,BasicCanvas.height+20-YIndex*i,100);
-	}
-	OuterContext.stroke();
-	OuterContext.closePath();
-	OuterContext.restore();   
-}
-</script>
-</head>
-<body>
-<canvas id="outerCanvas" style="position:absolute;left:10px;top:10px;border:1px solid" width="851px" height='653px'></canvas>
-<!-- 在style属性中添加width和height属性会出现莫名变换导致图像差异很大-->
-<canvas id="basicCanvas" style="position:absolute;left:30px;top:30px;" width="811px" height='613px'></canvas>
-<div id="point" style="position:absolute;left:870px;top:10px;width:150px;height:50px;border:1px solid"></div>
-<div style="position:absolute;left:870px;top:100px;width:150px;height:250px;border:1px solid">
-<table>
-	<tr><td>控制面板</td></tr>
-	<tr><td><input id="goToStart" type="button" value="开始"/></td><td><input id="goToEnd" type="button" value="结尾"/></td></tr>
-	<tr><td><input id="add" type="button" value="+"/></td><td><input id="reduce" type="button" value="-"/></td></tr>
-	<tr><td>X:<input id="xValue" type="text" style="width:45px"/></td><td>Y:<input id="yValue" type="text" style="width:45px"/></td></tr>
-	<tr><td><input id="goTo" type="button" value="GoTo"/></td></tr>
-	<tr><td><input id="closeTo" type="button" value="CloseTo"/></td></tr>
-	<tr><td><select id="linePointsIndex" style="width:70px"></select></td></tr>
-	<tr><td><input id="pointTo" type="button" value="PointTo"/></td></tr>
-	<tr><td><input id="nextTo" type="button" value="NextTo"/></td></tr>
-</table>
-</div>
-
-
+	</script>
 </body>
 </html>

@@ -3,13 +3,11 @@
   <head>
     <title>Script-based animation using requestAnimationFrame</title>
     <style type="text/css">
-     #animated { 
-       position: absolute; top:100px; 
-       padding: 50px; background: crimson; color: white; 
-       }
+      #animated { 
+        position: absolute; top:100px; 
+        padding: 50px; background: crimson; color: white; 
+      }
     </style>
-
- 
   </head>
   <body>
     <div>Click the box to stop it</div>
@@ -20,7 +18,7 @@
       var elm = document.getElementById("animated");
       var handle = 0;
       var lPos = 0;
-	  window.requestAnimationFrame(renderLoop);
+	    window.requestAnimationFrame(renderLoop);
       // renderLoop(Date.now);  // call animation frame to start
 
       function renderLoop(time) {
@@ -32,9 +30,8 @@
       document.getElementById("animated").addEventListener("click", function () {
         if (handle) {
           window.cancelAnimationFrame(handle);
-          }
-        }, false);
-      </script>
-
+        }
+      }, false);
+    </script>
   </body>
 </html>

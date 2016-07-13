@@ -1,138 +1,138 @@
 <html>
 <head>
-<script src="./jquery-1.7.1.js"></script>
-<script src="./LiyArrayUtil.js"></script>
-<script src="./LiyDateUtil.js"></script>
-<script type="text/javascript">
-//测试声明变量 有var和没有var的区别
-/*var windowName = "window"
-function Point(str){
-	value = str;
-	var name = str;
-}
-var point = new Point("function");
-alert(window.windowName);//内部函数可以访问对象的局部变量（相当于面向对象的私有变量）
-alert(window.value);//方法内部声明变量的时候，一定要使用var命令，如果没有，则实际上是声明了一个全局变量
-alert(point.name);//外部函数不能访问对象的局部变量（换句话说，外部函数不能访问对象的私有变量）*/
-
-$(function(){
-	//测试LiyDateUtil.js
-	//var dateNow = new Date();
-	//var timesD = new TimeDifference('+',365,3,24,53,43);
-	//alert(timesD.getTime());//测试时间差对象的获得总毫秒数方法
-	//var dateChange = operateTimeDifference(dateNow,timesD);
-	//alert(dateChange.format("yyyy-MM-dd hh:mm:ss 星期w"));//测试获得一段时间差后的时间方法
-	//alert(dateChange.format("yyyy-MM-dd hh:mm:ss 星期w"));
-	//alert(parse("2014/2/17").format("yyyy-MM-dd hh:mm:ss 星期w"));//测试把str转换为date
-	//alert(dateNow.format("yyyy-MM-dd hh:mm:ss 星期w"));//测试format方法
-	//alert(evaluateDateDelete(parse("2014/2/17 12:44:33"),parse("2014/2/19")).operator);//测试计算时间差以及时间差对象
-	//alert(dateNow.isLeapYear());//测试是否是闰年 
-	
-	//测试jquery
-	/*alert($("p:first").html());
-	alert($("p:last").text());*/
-	
-	//测试变量赋值
-	/*var x=1;
-	var y=x;
-	alert(x);
-	alert(y);
-	x=2;
-	alert(x);
-	alert(y);*/
-	
-	//测试方法不常用的创建方法
-	/*var add = new Function("x", "y", "return(x+y)");
-	alert(add(1,2));*/
-	
-	//关于函数和对象有点纠结
-	/*var add = new Function("x", "y", "return(x+y)")
-	function Person(name,age){
-		this.name=name;
-		this.age=age;
-		if(this.name!=null&&this.age!=null){
-			alert(this.name+" "+this.age);
-		}
-	}
-	Person('jbr',21);
-	var person=new Person('mty',23);
-	person();
-	for(var key in Person){
-		alert(key + ":" + Person[key]);
-	}
-	for(var key in person){
-		alert(key + ":" + person[key]);
-	}*/
-	
-	//测试数组
-	/*var stack = new Array(10);
-	stack['liy']=22;
-	stack['mty']=23;
-	stack['jbr']=24;
-	for(var item in stack){
-		//alert(stack[item]);
-	}
-	alert(stack.length);
-	for(var i=0;i<100;i++){
-		stack.push(i);
-	}
-	alert(stack.length);
-	delete(stack[10]);
-	alert(stack.length);
-	alert(stack[10]);*/
-});
-//测试匿名自执行函数
-/*
-(function hello(str){
-	var say=str+" My name is liyang!";
-	alert(say);
-})("hello javaScript!");*/
-
-//测试通过闭包，从外部读取方法的局部变量
-/*
-function outter(){
-	var value=999;
-	function inner(){
-		return value;
-	}
-	return inner;
-}
-var method=outter();
-var result=method();
-alert(result);*/
-
-//理解闭包的运行机制
-/*
-var name = "The Window";
-var object = { 
-	name : "My Object",
-	getNameFunc : function(){
-		return function(){
-			return this.name;
-		}; 
-	} 
-}; 
-alert(object.getNameFunc());*/
-
-/*var object={name:'liy'};
-var b=object;
-var c=b;
-var object=c;
-alert(b.name+" "+c.name+" "+object.name);*/
-
-//测试remove方法
-/*var array=[1,2,3,4,5];
-remove(array,2);
-alert(array.length);
-for(var i=0;i<array.length;i++){
-	alert(array[i]);
-}*/
-
-</script>
 </head>
 </body>
-<p>第一个p标签</p>
-<p>测试<br/>jquery</p>
+	<p>第一个p标签</p>
+	<p>测试<br/>jquery</p>
+	
+	<script src="./jquery-1.7.1.js"></script>
+	<script src="./LiyArrayUtil.js"></script>
+	<script src="./LiyDateUtil.js"></script>
+	<script type="text/javascript">
+	//测试声明变量 有var和没有var的区别
+	/*var windowName = "window"
+	function Point(str){
+		value = str;
+		var name = str;
+	}
+	var point = new Point("function");
+	alert(window.windowName);//内部函数可以访问对象的局部变量（相当于面向对象的私有变量）
+	alert(window.value);//方法内部声明变量的时候，一定要使用var命令，如果没有，则实际上是声明了一个全局变量
+	alert(point.name);//外部函数不能访问对象的局部变量（换句话说，外部函数不能访问对象的私有变量）*/
 
+	$(function(){
+		//测试LiyDateUtil.js
+		//var dateNow = new Date();
+		//var timesD = new TimeDifference('+',365,3,24,53,43);
+		//alert(timesD.getTime());//测试时间差对象的获得总毫秒数方法
+		//var dateChange = operateTimeDifference(dateNow,timesD);
+		//alert(dateChange.format("yyyy-MM-dd hh:mm:ss 星期w"));//测试获得一段时间差后的时间方法
+		//alert(dateChange.format("yyyy-MM-dd hh:mm:ss 星期w"));
+		//alert(parse("2014/2/17").format("yyyy-MM-dd hh:mm:ss 星期w"));//测试把str转换为date
+		//alert(dateNow.format("yyyy-MM-dd hh:mm:ss 星期w"));//测试format方法
+		//alert(evaluateDateDelete(parse("2014/2/17 12:44:33"),parse("2014/2/19")).operator);//测试计算时间差以及时间差对象
+		//alert(dateNow.isLeapYear());//测试是否是闰年 
+		
+		//测试jquery
+		/*alert($("p:first").html());
+		alert($("p:last").text());*/
+		
+		//测试变量赋值
+		/*var x=1;
+		var y=x;
+		alert(x);
+		alert(y);
+		x=2;
+		alert(x);
+		alert(y);*/
+		
+		//测试方法不常用的创建方法
+		/*var add = new Function("x", "y", "return(x+y)");
+		alert(add(1,2));*/
+		
+		//关于函数和对象有点纠结
+		/*var add = new Function("x", "y", "return(x+y)")
+		function Person(name,age){
+			this.name=name;
+			this.age=age;
+			if(this.name!=null&&this.age!=null){
+				alert(this.name+" "+this.age);
+			}
+		}
+		Person('jbr',21);
+		var person=new Person('mty',23);
+		person();
+		for(var key in Person){
+			alert(key + ":" + Person[key]);
+		}
+		for(var key in person){
+			alert(key + ":" + person[key]);
+		}*/
+		
+		//测试数组
+		/*var stack = new Array(10);
+		stack['liy']=22;
+		stack['mty']=23;
+		stack['jbr']=24;
+		for(var item in stack){
+			//alert(stack[item]);
+		}
+		alert(stack.length);
+		for(var i=0;i<100;i++){
+			stack.push(i);
+		}
+		alert(stack.length);
+		delete(stack[10]);
+		alert(stack.length);
+		alert(stack[10]);*/
+	});
+	//测试匿名自执行函数
+	/*
+	(function hello(str){
+		var say=str+" My name is liyang!";
+		alert(say);
+	})("hello javaScript!");*/
+
+	//测试通过闭包，从外部读取方法的局部变量
+	/*
+	function outter(){
+		var value=999;
+		function inner(){
+			return value;
+		}
+		return inner;
+	}
+	var method=outter();
+	var result=method();
+	alert(result);*/
+
+	//理解闭包的运行机制
+	/*
+	var name = "The Window";
+	var object = { 
+		name : "My Object",
+		getNameFunc : function(){
+			return function(){
+				return this.name;
+			}; 
+		} 
+	}; 
+	alert(object.getNameFunc());*/
+
+	/*var object={name:'liy'};
+	var b=object;
+	var c=b;
+	var object=c;
+	alert(b.name+" "+c.name+" "+object.name);*/
+
+	//测试remove方法
+	/*var array=[1,2,3,4,5];
+	remove(array,2);
+	alert(array.length);
+	for(var i=0;i<array.length;i++){
+		alert(array[i]);
+	}*/
+
+	</script>
 </body>
 </html>

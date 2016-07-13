@@ -3,61 +3,60 @@
 <head>
 	<meta charset="UTF-8">
 	<title>canvas自适应测试</title>
-	<meta charset="utf-8">
-</head>
-<style>
-	body{
-		height: 100%;
-		width: 100%;
-		margin: 0;
-		padding: 0;
-	}
-	.autoCanvas{
-		border:1px solid black;
-		margin:0 auto;
-		display: block;
-		position: absolute;
-		top:50%;
-		left:50%;
-		transform:translate(-50%,-50%);
-	}
-</style>
-<script src="./jquery-1.7.1.js"></script>
-<body>
-<body >
-		<canvas id="autoCanvas" width="300" height="600" class="autoCanvas">
-			您的浏览器不支持HTML5 canvas，请换一个浏览器。
-		</canvas>
-</body>
-<script>
-	var autoCanvas = document.querySelector("#autoCanvas");
-	var autoContext = autoCanvas.getContext("2d");
-	autoContext.fillRect(100,100,100,100);
-	$(function(){
-		selfAdaption();
-	})
-	//canvas自适应
-	function selfAdaption(){
-		//保持宽高比自适应
-		var realWidth;//真实宽度
-		var realHeight;//真实高度
-		var basicWidth = 300.0;//标准宽度
-		var basicHeight = 600.0;//标准高度
-		var clientWidth = parseFloat(document.documentElement.clientWidth-2);
-		var clientHeight = parseFloat(document.documentElement.clientHeight-2);
-		if(clientWidth/clientHeight>basicWidth/basicHeight){
-			realHeight = clientHeight;
-			realWidth = realHeight*basicWidth/basicHeight;
-		}else{
-			realWidth = clientWidth;
-			realHeight = realWidth/(basicWidth/basicHeight);
+	<style>
+		body{
+			height: 100%;
+			width: 100%;
+			margin: 0;
+			padding: 0;
 		}
-		$(autoCanvas).css({"width":realWidth+"px","height":realHeight+"px"});
-	}
-	//监听屏幕变化
-	window.addEventListener("resize", function () {  
-		selfAdaption();  
-	}, false);  
+		.autoCanvas{
+			border:1px solid black;
+			margin:0 auto;
+			display: block;
+			position: absolute;
+			top:50%;
+			left:50%;
+			transform:translate(-50%,-50%);
+		}
+	</style>
+</head>
+<body>
+	<canvas id="autoCanvas" width="300" height="600" class="autoCanvas">
+		您的浏览器不支持HTML5 canvas，请换一个浏览器。
+	</canvas>
+	
+	<script src="./jquery-1.7.1.js"></script>
+	<script>
+		var autoCanvas = document.querySelector("#autoCanvas");
+		var autoContext = autoCanvas.getContext("2d");
+		autoContext.fillRect(100,100,100,100);
+		$(function(){
+			selfAdaption();
+		})
+		//canvas自适应
+		function selfAdaption(){
+			//保持宽高比自适应
+			var realWidth;//真实宽度
+			var realHeight;//真实高度
+			var basicWidth = 300.0;//标准宽度
+			var basicHeight = 600.0;//标准高度
+			var clientWidth = parseFloat(document.documentElement.clientWidth-2);
+			var clientHeight = parseFloat(document.documentElement.clientHeight-2);
+			if(clientWidth/clientHeight>basicWidth/basicHeight){
+				realHeight = clientHeight;
+				realWidth = realHeight*basicWidth/basicHeight;
+			}else{
+				realWidth = clientWidth;
+				realHeight = realWidth/(basicWidth/basicHeight);
+			}
+			$(autoCanvas).css({"width":realWidth+"px","height":realHeight+"px"});
+		}
+		//监听屏幕变化
+		window.addEventListener("resize", function () {  
+			selfAdaption();  
+		}, false);  
 
-</script>
+	</script>
+</body>
 </html>

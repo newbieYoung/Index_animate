@@ -1,139 +1,139 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<script src="./jquery-1.7.1.js"></script>
-<script type="text/javascript">
-$(function(){
-	$("#support").hide();
-	$("#support").text("");
-	//检测是否支持canvas
-	try{
-		document.createElement("canvas").getContext("2d");
-		//开始画图
-		drawScale();
-		drawTree();
-		drawCurve();
-		drawPic();
-		drawScaleTree();
-	}catch(e){
-		$("#support").show();
-		$("#support").text("HTML5 canvas is not supported in this browser!");
-	}
-});
-//添加监听
-//window.addEventListener("load",drawScale,true);
-//标度刻画
-function drawScale(){
-	var outerCanvas=document.querySelector("#outerCanvas");
-	var context=outerCanvas.getContext("2d");
-	context.beginPath();
-	context.strokeStyle="green";
-	for(var i=1;i<60;i++){
-		//横线
-		context.moveTo(0,10*i);
-		context.lineTo(10,10*i);
-		context.moveTo(590,10*i);
-		context.lineTo(600,10*i);
-		context.moveTo(10,10);
-		context.lineTo(590,10);
-		context.moveTo(10,590);
-		context.lineTo(590,590);
-		//竖线
-		context.moveTo(10*i,0);
-		context.lineTo(10*i,10);
-		context.moveTo(10*i,590);
-		context.lineTo(10*i,600);
-		context.moveTo(10,10);
-		context.lineTo(10,590);
-		context.moveTo(590,10);
-		context.lineTo(590,590);
-	}
-	context.closePath();
-	context.stroke();
-}
-//画树
-function drawTree(){
-	var outerCanvas=document.querySelector("#outerCanvas");
-	var context=outerCanvas.getContext("2d");
-	//设置线条样式
-	context.lineWidth=4;
-	context.lineJoin='round';
-	context.strokeStyle="#663300";
-	context.save();
-	context.translate(130,250);
-	designTree(context);
-	context.stroke();
-	context.restore();
-	//填充
-	context.fillStyle="#339900";
-	context.fill();
-}
-//画放大的树
-function drawScaleTree(){
-	var outerCanvas=document.querySelector("#outerCanvas");
-	var context=outerCanvas.getContext("2d");
-	context.save();
-	context.translate(260,500);
-	context.scale(2,2);
-	designTree(context);
-	context.stroke();
-	context.restore();
-	//填充
-	context.fillStyle="#339900";
-	context.fill();
-}
-//贴图片
-function drawPic(){
-	var flower=new Image();
-	flower.src="./flower.jpg";
-	flower.onload=function(){
-		var outerCanvas=document.querySelector("#outerCanvas");
-		var context=outerCanvas.getContext("2d");
-		context.drawImage(flower,400,0,204,104);
-	}
-}
-//画曲线
-function drawCurve(){
-	var outerCanvas=document.querySelector("#outerCanvas");
-	var context=outerCanvas.getContext("2d");
-	context.save();
-	context.translate(-10,350);
-	context.beginPath();
-	context.moveTo(0,0);
-	context.quadraticCurveTo(170,-50,260,-190);
-	context.quadraticCurveTo(310,-250,410,-250);
-	context.strokeStyle='#663300';
-	context.lineWidth=20;
-	context.stroke();
-	context.restore();
-}
-//设计树
-function designTree(context){
-	//开始路径
-	context.beginPath();
-	//树冠
-	context.moveTo(-25,-50);
-	context.lineTo(-10,-80);
-	context.lineTo(-20,-80);
-	context.lineTo(-5,-110);
-	context.lineTo(-15,-110);
-	context.lineTo(0,-140);
-	context.lineTo(15,-110);
-	context.lineTo(5,-110);
-	context.lineTo(20,-80);
-	context.lineTo(10,-80);
-	context.lineTo(25,-50);
-	//树干
-	context.fillStyle='#663300';
-	context.fillRect(-5,-50,10,50);
-	//关闭路径
-	context.closePath();
-}
-</script>
+	<meta charset="utf-8">
 </head>
 <body>
-<p id="support"><p>
-<canvas id="outerCanvas" style="border:1px solid;" width="600px" height='600px'></canvas>
+	<p id="support"><p>
+	<canvas id="outerCanvas" style="border:1px solid;" width="600px" height='600px'></canvas>
+	<script src="./jquery-1.7.1.js"></script>
+	<script type="text/javascript">
+	$(function(){
+		$("#support").hide();
+		$("#support").text("");
+		//检测是否支持canvas
+		try{
+			document.createElement("canvas").getContext("2d");
+			//开始画图
+			drawScale();
+			drawTree();
+			drawCurve();
+			drawPic();
+			drawScaleTree();
+		}catch(e){
+			$("#support").show();
+			$("#support").text("HTML5 canvas is not supported in this browser!");
+		}
+	});
+	//添加监听
+	//window.addEventListener("load",drawScale,true);
+	//标度刻画
+	function drawScale(){
+		var outerCanvas=document.querySelector("#outerCanvas");
+		var context=outerCanvas.getContext("2d");
+		context.beginPath();
+		context.strokeStyle="green";
+		for(var i=1;i<60;i++){
+			//横线
+			context.moveTo(0,10*i);
+			context.lineTo(10,10*i);
+			context.moveTo(590,10*i);
+			context.lineTo(600,10*i);
+			context.moveTo(10,10);
+			context.lineTo(590,10);
+			context.moveTo(10,590);
+			context.lineTo(590,590);
+			//竖线
+			context.moveTo(10*i,0);
+			context.lineTo(10*i,10);
+			context.moveTo(10*i,590);
+			context.lineTo(10*i,600);
+			context.moveTo(10,10);
+			context.lineTo(10,590);
+			context.moveTo(590,10);
+			context.lineTo(590,590);
+		}
+		context.closePath();
+		context.stroke();
+	}
+	//画树
+	function drawTree(){
+		var outerCanvas=document.querySelector("#outerCanvas");
+		var context=outerCanvas.getContext("2d");
+		//设置线条样式
+		context.lineWidth=4;
+		context.lineJoin='round';
+		context.strokeStyle="#663300";
+		context.save();
+		context.translate(130,250);
+		designTree(context);
+		context.stroke();
+		context.restore();
+		//填充
+		context.fillStyle="#339900";
+		context.fill();
+	}
+	//画放大的树
+	function drawScaleTree(){
+		var outerCanvas=document.querySelector("#outerCanvas");
+		var context=outerCanvas.getContext("2d");
+		context.save();
+		context.translate(260,500);
+		context.scale(2,2);
+		designTree(context);
+		context.stroke();
+		context.restore();
+		//填充
+		context.fillStyle="#339900";
+		context.fill();
+	}
+	//贴图片
+	function drawPic(){
+		var flower=new Image();
+		flower.src="./flower.jpg";
+		flower.onload=function(){
+			var outerCanvas=document.querySelector("#outerCanvas");
+			var context=outerCanvas.getContext("2d");
+			context.drawImage(flower,400,0,204,104);
+		}
+	}
+	//画曲线
+	function drawCurve(){
+		var outerCanvas=document.querySelector("#outerCanvas");
+		var context=outerCanvas.getContext("2d");
+		context.save();
+		context.translate(-10,350);
+		context.beginPath();
+		context.moveTo(0,0);
+		context.quadraticCurveTo(170,-50,260,-190);
+		context.quadraticCurveTo(310,-250,410,-250);
+		context.strokeStyle='#663300';
+		context.lineWidth=20;
+		context.stroke();
+		context.restore();
+	}
+	//设计树
+	function designTree(context){
+		//开始路径
+		context.beginPath();
+		//树冠
+		context.moveTo(-25,-50);
+		context.lineTo(-10,-80);
+		context.lineTo(-20,-80);
+		context.lineTo(-5,-110);
+		context.lineTo(-15,-110);
+		context.lineTo(0,-140);
+		context.lineTo(15,-110);
+		context.lineTo(5,-110);
+		context.lineTo(20,-80);
+		context.lineTo(10,-80);
+		context.lineTo(25,-50);
+		//树干
+		context.fillStyle='#663300';
+		context.fillRect(-5,-50,10,50);
+		//关闭路径
+		context.closePath();
+	}
+	</script>
 </body>
 </html>

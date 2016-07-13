@@ -3,6 +3,9 @@
 <html>
     <head>
 		<title>GBin1 Balls demo for HTML Canvas</title>
+    </head>
+    <body onmousedown="return false;">
+        <canvas id="myCanvas" width="320" height="200"></canvas>
 		<script src="./jquery-1.7.1.js"></script>
         <script language="javascript">
             window.requestAnimFrame = (function(callback){
@@ -505,9 +508,5 @@
                 animate(canvas, balls, time, mousePos);
             };
         </script>
-    </head>
-    <body onmousedown="return false;">
-        <canvas id="myCanvas" width="320" height="200">
-        </canvas>
     </body>
 </html>

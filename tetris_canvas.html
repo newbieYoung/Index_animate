@@ -1,805 +1,806 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8"/>
-<script src="./jquery-1.7.1.js"></script>
-<script src="./LiyArrayUtil.js"></script>
-<script src="./LiyDateUtil.js"></script>
-<script src="./LiyCompatibility.js"></script>
-<script type="text/javascript">
-//<!-- 2013/12/26 基本图形运动变换功能完成 游戏开始功能 游戏积分功能  暂停游戏功能 完成        -->
-//<!-- 2013/12/27 时间计算功能完成 -->
-//<!-- 			游戏死亡功能 保存游戏功能 导入游戏功能 待完成     -->
-//全局变量
-var TetrisCanvas;//游戏主画板
-var TetrisContext;//游戏主画板上下文
-var NextCanvas;//提示画板
-var NextContext;//提示画板上下文
-var BasicSize;//矩形默认宽度和高度
-var Times=500;//频率
-//游戏界面长10刻度，宽20刻度（默认约定）
-var GameWidthSize=10;
-var GameHeightSize=20;
-var Colors=["pink","yellow","green"];//颜色集合
-var LastColor=Colors[0];//初始化颜色
+	<meta charset="utf-8"/>
+</head>
+<body>
+	<!-- 游戏界面长10刻度，宽20刻度（默认约定） -->
+	<canvas id="tetrisCanvas" style="position:absolute;left:30px;top:30px;border:1px solid" width="300px" height='600px'></canvas>
+	<div style="position:absolute;left:350px;top:30px;width:200px;height:410px;border:1px solid">
+	<table>
+		<tr><td>信息面板</td></tr>
+		<tr><td>Score:</td></tr>
+		<tr><td><input id="score" type="text"></td></tr>
+		<tr><td>Times:</td></tr>
+		<tr><td><input id="times" type="text"></td></tr>
+		<tr><td>Next:</td></tr>
+		<tr><td><canvas id="nextCanvas" style="border:1px solid" width="192px" height='100px'></canvas></td></tr>
+		<tr><td><input id="startGame" type="button" value="StartGame"></td></tr>
+		<tr><td><input id="pauseGame" type="button" value="PauseGame"></td></tr>
+		<tr><td><input id="loadGame" type="button" value="LoadGame:"></td></tr>
+		<tr><td><input id="gameDataFile" type="file"/></td></tr>
+		<tr><td><input id="saveGame" type="button" value="SaveGame"></td></tr>
+	</table>
+	</div>
+	<div style="position:absolute;left:350px;top:460px;width:200px;height:100px;border:1px solid">
+	<table>
+		<tr><td>控制面板</td><td></td></tr>
+		<tr><td><input id="leftC" type="button" value="Left"></td><td><input id="rightC" type="button" value="Right"></td></tr>
+		<tr><td><input id="upC" type="button" value="Up"></td><td><input id="downC" type="button" value="Down"></td></tr>
+	</table>
+	</div>
 
-var NowBasicGraph;//当前正在移动的基本图形
-var NextBasicGraph;//下一次的基本图形
-var AllBasciGraph=[];//游戏界面堆积的基本图形
-var Score=0;//游戏积分
-var StartTime=new Date();//开始时间
-var Time=0;//游戏时间
-var pauseGame=false;//是否暂停游戏 true暂停，false 继续
+	<script src="./jquery-1.7.1.js"></script>
+	<script src="./LiyArrayUtil.js"></script>
+	<script src="./LiyDateUtil.js"></script>
+	<script src="./LiyCompatibility.js"></script>
+	<script type="text/javascript">
+	//<!-- 2013/12/26 基本图形运动变换功能完成 游戏开始功能 游戏积分功能  暂停游戏功能 完成        -->
+	//<!-- 2013/12/27 时间计算功能完成 -->
+	//<!-- 			游戏死亡功能 保存游戏功能 导入游戏功能 待完成     -->
+	//全局变量
+	var TetrisCanvas;//游戏主画板
+	var TetrisContext;//游戏主画板上下文
+	var NextCanvas;//提示画板
+	var NextContext;//提示画板上下文
+	var BasicSize;//矩形默认宽度和高度
+	var Times=500;//频率
+	//游戏界面长10刻度，宽20刻度（默认约定）
+	var GameWidthSize=10;
+	var GameHeightSize=20;
+	var Colors=["pink","yellow","green"];//颜色集合
+	var LastColor=Colors[0];//初始化颜色
 
-$(window).ready(function(){
-	TetrisCanvas=document.querySelector("#tetrisCanvas");
-	TetrisContext=TetrisCanvas.getContext("2d");
-	NextCanvas=document.querySelector("#nextCanvas");
-	NextContext=NextCanvas.getContext("2d");
-	BasicSize=TetrisCanvas.width/GameWidthSize;
-	//操作监听
-	$("#leftC").click(function(){
-		goLeft();
+	var NowBasicGraph;//当前正在移动的基本图形
+	var NextBasicGraph;//下一次的基本图形
+	var AllBasciGraph=[];//游戏界面堆积的基本图形
+	var Score=0;//游戏积分
+	var StartTime=new Date();//开始时间
+	var Time=0;//游戏时间
+	var pauseGame=false;//是否暂停游戏 true暂停，false 继续
+
+	$(window).ready(function(){
+		TetrisCanvas=document.querySelector("#tetrisCanvas");
+		TetrisContext=TetrisCanvas.getContext("2d");
+		NextCanvas=document.querySelector("#nextCanvas");
+		NextContext=NextCanvas.getContext("2d");
+		BasicSize=TetrisCanvas.width/GameWidthSize;
+		//操作监听
+		$("#leftC").click(function(){
+			goLeft();
+		});
+		$("#rightC").click(function(){
+			goRight();
+		});
+		$("#upC").click(function(){
+			NowBasicGraphChange();
+		});
+		$("#downC").click(function(){
+			goDown();
+		});
+		$("#startGame").click(function(){
+			start();
+		});
+		$("#pauseGame").click(function(){
+			end();
+		});
+		//首先得保证界面的适应性
+		if(parseInt(BasicSize)==BasicSize&&BasicSize==TetrisCanvas.height/GameHeightSize&&!pauseGame){
+			setInterval(drawBasic,Times);
+			setInterval(goDown,Times);
+			setInterval(showTime,Times);
+			//尝试使用效率更高的requestAnimationFrame解决动画问题（貌似不能自己控制频率，而是默认使用浏览器的最佳频率，在这个问题里边显得太快）
+			//window.requestAnimationFrame(loopWorks,Times);
+		}
 	});
-	$("#rightC").click(function(){
-		goRight();
-	});
-	$("#upC").click(function(){
-		NowBasicGraphChange();
-	});
-	$("#downC").click(function(){
+	//需要重复进行的工作(配合requestAnimationFrame使用)
+	function loopWorks(){
+		drawBasic();
 		goDown();
-	});
-	$("#startGame").click(function(){
-		start();
-	});
-	$("#pauseGame").click(function(){
-		end();
-	});
-	//首先得保证界面的适应性
-	if(parseInt(BasicSize)==BasicSize&&BasicSize==TetrisCanvas.height/GameHeightSize&&!pauseGame){
-		setInterval(drawBasic,Times);
-		setInterval(goDown,Times);
-		setInterval(showTime,Times);
-		//尝试使用效率更高的requestAnimationFrame解决动画问题（貌似不能自己控制频率，而是默认使用浏览器的最佳频率，在这个问题里边显得太快）
+		showTime();
 		//window.requestAnimationFrame(loopWorks,Times);
 	}
-});
-//需要重复进行的工作(配合requestAnimationFrame使用)
-function loopWorks(){
-	drawBasic();
-	goDown();
-	showTime();
-	//window.requestAnimationFrame(loopWorks,Times);
-}
-//显示时间
-function showTime(){
-	var endDate=new Date();
-	var tempDate=evaluateDateDelete(StartTime,endDate);
-	$("#times").val(tempDate.day+"天 "+tempDate.hour+"小时 "+tempDate.minute+"分钟 "+tempDate.second+"秒 ");
-}
-function goRight(){
-	if(NowBasicGraph!=null){
-		if(checkRight()){
-			for(var i=0;i<NowBasicGraph.rectArray.length;i++){
-				NowBasicGraph.rectArray[i].point.x+=BasicSize;
-			}
-		}
+	//显示时间
+	function showTime(){
+		var endDate=new Date();
+		var tempDate=evaluateDateDelete(StartTime,endDate);
+		$("#times").val(tempDate.day+"天 "+tempDate.hour+"小时 "+tempDate.minute+"分钟 "+tempDate.second+"秒 ");
 	}
-}
-function goLeft(){
-	if(NowBasicGraph!=null){
-		if(checkLeft()){
-			for(var i=0;i<NowBasicGraph.rectArray.length;i++){
-				NowBasicGraph.rectArray[i].point.x-=BasicSize;
-			}
-		}
-	}
-}
-function goDown(){
-	console.log("goDown");
-	if(NowBasicGraph!=null&&!pauseGame){
-		if(checkDown()){
-			console.log("goDown if");
-			for(var i=0;i<NowBasicGraph.rectArray.length;i++){
-				NowBasicGraph.rectArray[i].point.y+=BasicSize;
-			}
-		}else{
-			console.log("goDown else");
-			//当前移动图形变为堆积图形
-			AllBasciGraph.push(NowBasicGraph);
-			NowBasicGraph=null;//这句很重要，要不然容易死循环
-			//消除然后计算积分
-			score();
-			$("#score").val(Score);
-			start();
-		}
-	}
-}
-function NowBasicGraphChange(){
-	if(NowBasicGraph!=null){
-		if(checkChange()){
-			
-		}else{
-			NowBasicGraph.rollBack();
-		}
-	}
-}
-//暂停游戏
-function end(){
-	pauseGame=true;
-}
-//确定正在移动基本图形和下一次基本图形
-function start(){
-	console.log("start");
-	pauseGame=false;
-	if(NextBasicGraph!=null&&NowBasicGraph!=null){
-		console.log("start if");
-	}else{
-		console.log("start else");
-		if(NextBasicGraph==null){
-			var TempBasicGraph=randomRect();//随机生成七种图形中的一种
-			NowBasicGraph=getNextGraph(TempBasicGraph);//初始化在主画板，并确定为正在移动图形
-		}else{
-			NowBasicGraph=getNextGraph(NextBasicGraph);//获得下一次图形，并进行坐标变换
-		}
-		TempBasicGraph=randomRect();//随机生成七种图形中的一种
-		NextBasicGraph=TempBasicGraph;//确定为下一次基本图形
-	}
-}
-//主画板从辅助画板获得基本图形
-function getNextGraph(basicGraph){
-	for(var i=0;i<basicGraph.rectArray.length;i++){
-		basicGraph.rectArray[i].point.x+=(GameWidthSize/2-1)*BasicSize;
-	}
-	return basicGraph;
-}
-//消除然后计算积分
-function score(){
-	if(AllBasciGraph!=null){
-		var arrayNo=[];
-		for(var i=GameHeightSize-1;i>=0;i--){
-			arrayNo.length=0;
-			for(var j=0;j<AllBasciGraph.length;j++){
-				for(var z=0;z<AllBasciGraph[j].rectArray.length;z++){
-					if(AllBasciGraph[j].rectArray[z].point.y==i*BasicSize){
-						arrayNo.push([j,z]);
-					}
+	function goRight(){
+		if(NowBasicGraph!=null){
+			if(checkRight()){
+				for(var i=0;i<NowBasicGraph.rectArray.length;i++){
+					NowBasicGraph.rectArray[i].point.x+=BasicSize;
 				}
 			}
-			//某一行被填满，消除
-			if(arrayNo.length==GameWidthSize){
-				Score++;//分数加一
-				i++;//上面的行会替代这一行，所以还得从这一行开始判断
-				for(var q=0;q<arrayNo.length;q++){
-					//让其等于一个大数（好处在于：既不会对元素的次序产生影响，也不会显示在界面上，同时也解决了置为空对画图的影响）
-					AllBasciGraph[arrayNo[q][0]].rectArray[arrayNo[q][1]].point.x=2*TetrisCanvas.width;
-					AllBasciGraph[arrayNo[q][0]].rectArray[arrayNo[q][1]].point.y=2*TetrisCanvas.height;
+		}
+	}
+	function goLeft(){
+		if(NowBasicGraph!=null){
+			if(checkLeft()){
+				for(var i=0;i<NowBasicGraph.rectArray.length;i++){
+					NowBasicGraph.rectArray[i].point.x-=BasicSize;
 				}
-				//所有纵坐标小于i*BasicSize的矩形向下移动一位
+			}
+		}
+	}
+	function goDown(){
+		console.log("goDown");
+		if(NowBasicGraph!=null&&!pauseGame){
+			if(checkDown()){
+				console.log("goDown if");
+				for(var i=0;i<NowBasicGraph.rectArray.length;i++){
+					NowBasicGraph.rectArray[i].point.y+=BasicSize;
+				}
+			}else{
+				console.log("goDown else");
+				//当前移动图形变为堆积图形
+				AllBasciGraph.push(NowBasicGraph);
+				NowBasicGraph=null;//这句很重要，要不然容易死循环
+				//消除然后计算积分
+				score();
+				$("#score").val(Score);
+				start();
+			}
+		}
+	}
+	function NowBasicGraphChange(){
+		if(NowBasicGraph!=null){
+			if(checkChange()){
+				
+			}else{
+				NowBasicGraph.rollBack();
+			}
+		}
+	}
+	//暂停游戏
+	function end(){
+		pauseGame=true;
+	}
+	//确定正在移动基本图形和下一次基本图形
+	function start(){
+		console.log("start");
+		pauseGame=false;
+		if(NextBasicGraph!=null&&NowBasicGraph!=null){
+			console.log("start if");
+		}else{
+			console.log("start else");
+			if(NextBasicGraph==null){
+				var TempBasicGraph=randomRect();//随机生成七种图形中的一种
+				NowBasicGraph=getNextGraph(TempBasicGraph);//初始化在主画板，并确定为正在移动图形
+			}else{
+				NowBasicGraph=getNextGraph(NextBasicGraph);//获得下一次图形，并进行坐标变换
+			}
+			TempBasicGraph=randomRect();//随机生成七种图形中的一种
+			NextBasicGraph=TempBasicGraph;//确定为下一次基本图形
+		}
+	}
+	//主画板从辅助画板获得基本图形
+	function getNextGraph(basicGraph){
+		for(var i=0;i<basicGraph.rectArray.length;i++){
+			basicGraph.rectArray[i].point.x+=(GameWidthSize/2-1)*BasicSize;
+		}
+		return basicGraph;
+	}
+	//消除然后计算积分
+	function score(){
+		if(AllBasciGraph!=null){
+			var arrayNo=[];
+			for(var i=GameHeightSize-1;i>=0;i--){
+				arrayNo.length=0;
 				for(var j=0;j<AllBasciGraph.length;j++){
 					for(var z=0;z<AllBasciGraph[j].rectArray.length;z++){
-						if(AllBasciGraph[j].rectArray[z].point.y<i*BasicSize){
-							AllBasciGraph[j].rectArray[z].point.y+=BasicSize;
+						if(AllBasciGraph[j].rectArray[z].point.y==i*BasicSize){
+							arrayNo.push([j,z]);
+						}
+					}
+				}
+				//某一行被填满，消除
+				if(arrayNo.length==GameWidthSize){
+					Score++;//分数加一
+					i++;//上面的行会替代这一行，所以还得从这一行开始判断
+					for(var q=0;q<arrayNo.length;q++){
+						//让其等于一个大数（好处在于：既不会对元素的次序产生影响，也不会显示在界面上，同时也解决了置为空对画图的影响）
+						AllBasciGraph[arrayNo[q][0]].rectArray[arrayNo[q][1]].point.x=2*TetrisCanvas.width;
+						AllBasciGraph[arrayNo[q][0]].rectArray[arrayNo[q][1]].point.y=2*TetrisCanvas.height;
+					}
+					//所有纵坐标小于i*BasicSize的矩形向下移动一位
+					for(var j=0;j<AllBasciGraph.length;j++){
+						for(var z=0;z<AllBasciGraph[j].rectArray.length;z++){
+							if(AllBasciGraph[j].rectArray[z].point.y<i*BasicSize){
+								AllBasciGraph[j].rectArray[z].point.y+=BasicSize;
+							}
 						}
 					}
 				}
 			}
-		}
-		//排除掉无效数据，释放内存
-		for(var j=0;j<AllBasciGraph.length;j++){
-			for(var z=0;z<AllBasciGraph[j].rectArray.length;z++){
-				if(AllBasciGraph[j].rectArray[z].point.y>=2*TetrisCanvas.height&&AllBasciGraph[j].rectArray[z].point.x>=2*TetrisCanvas.width){
-					remove(AllBasciGraph[j].rectArray,z);
-					z--;
+			//排除掉无效数据，释放内存
+			for(var j=0;j<AllBasciGraph.length;j++){
+				for(var z=0;z<AllBasciGraph[j].rectArray.length;z++){
+					if(AllBasciGraph[j].rectArray[z].point.y>=2*TetrisCanvas.height&&AllBasciGraph[j].rectArray[z].point.x>=2*TetrisCanvas.width){
+						remove(AllBasciGraph[j].rectArray,z);
+						z--;
+					}
 				}
-			}
-			if(AllBasciGraph[j].length<=0){
-				remove(AllBasciGraph,j);
-				j--;
+				if(AllBasciGraph[j].length<=0){
+					remove(AllBasciGraph,j);
+					j--;
+				}
 			}
 		}
 	}
-}
 
-//判断当前正在移动图形是否可以下移
-function checkDown(){
-	for(var i=0;i<NowBasicGraph.rectArray.length;i++){
-		var tempPoint=new Point(NowBasicGraph.rectArray[i].point.x,NowBasicGraph.rectArray[i].point.y+BasicSize);//向下移动一个单位
-		//先判断是否有越界的
-		if(tempPoint.y>=TetrisCanvas.height){
-			return false;
-		}
-		//再判断是否有重复的
-		for(var j=0;j<AllBasciGraph.length;j++){
-			for(var z=0;z<AllBasciGraph[j].rectArray.length;z++){
-				if(tempPoint.y==AllBasciGraph[j].rectArray[z].point.y&&tempPoint.x==AllBasciGraph[j].rectArray[z].point.x){
-					return false;
+	//判断当前正在移动图形是否可以下移
+	function checkDown(){
+		for(var i=0;i<NowBasicGraph.rectArray.length;i++){
+			var tempPoint=new Point(NowBasicGraph.rectArray[i].point.x,NowBasicGraph.rectArray[i].point.y+BasicSize);//向下移动一个单位
+			//先判断是否有越界的
+			if(tempPoint.y>=TetrisCanvas.height){
+				return false;
+			}
+			//再判断是否有重复的
+			for(var j=0;j<AllBasciGraph.length;j++){
+				for(var z=0;z<AllBasciGraph[j].rectArray.length;z++){
+					if(tempPoint.y==AllBasciGraph[j].rectArray[z].point.y&&tempPoint.x==AllBasciGraph[j].rectArray[z].point.x){
+						return false;
+					}
 				}
 			}
 		}
+		return true;
 	}
-	return true;
-}
-//判断当前正在移动图形是否可以左移
-function checkLeft(){
-	for(var i=0;i<NowBasicGraph.rectArray.length;i++){
-		var tempPoint=new Point(NowBasicGraph.rectArray[i].point.x-BasicSize,NowBasicGraph.rectArray[i].point.y);//向左边移动一个单位
-		//先判断是否有越界的
-		if(tempPoint.x<0){
-			return false;
-		}
-		//再判断是否有重复的
-		for(var j=0;j<AllBasciGraph.length;j++){
-			for(var z=0;z<AllBasciGraph[j].rectArray.length;z++){
-				if(tempPoint.y==AllBasciGraph[j].rectArray[z].point.y&&tempPoint.x==AllBasciGraph[j].rectArray[z].point.x){
-					return false;
+	//判断当前正在移动图形是否可以左移
+	function checkLeft(){
+		for(var i=0;i<NowBasicGraph.rectArray.length;i++){
+			var tempPoint=new Point(NowBasicGraph.rectArray[i].point.x-BasicSize,NowBasicGraph.rectArray[i].point.y);//向左边移动一个单位
+			//先判断是否有越界的
+			if(tempPoint.x<0){
+				return false;
+			}
+			//再判断是否有重复的
+			for(var j=0;j<AllBasciGraph.length;j++){
+				for(var z=0;z<AllBasciGraph[j].rectArray.length;z++){
+					if(tempPoint.y==AllBasciGraph[j].rectArray[z].point.y&&tempPoint.x==AllBasciGraph[j].rectArray[z].point.x){
+						return false;
+					}
 				}
 			}
 		}
+		return true;
 	}
-	return true;
-}
-//判断当前正在移动图形是否可以右移
-function checkRight(){
-	for(var i=0;i<NowBasicGraph.rectArray.length;i++){
-		var tempPoint=new Point(NowBasicGraph.rectArray[i].point.x+BasicSize,NowBasicGraph.rectArray[i].point.y);//向右边移动一个单位
-		//先判断是否有越界的
-		if(tempPoint.x>=TetrisCanvas.width){
-			return false;
-		}
-		//再判断是否有重复的
-		for(var j=0;j<AllBasciGraph.length;j++){
-			for(var z=0;z<AllBasciGraph[j].rectArray.length;z++){
-				if(tempPoint.y==AllBasciGraph[j].rectArray[z].point.y&&tempPoint.x==AllBasciGraph[j].rectArray[z].point.x){
-					return false;
+	//判断当前正在移动图形是否可以右移
+	function checkRight(){
+		for(var i=0;i<NowBasicGraph.rectArray.length;i++){
+			var tempPoint=new Point(NowBasicGraph.rectArray[i].point.x+BasicSize,NowBasicGraph.rectArray[i].point.y);//向右边移动一个单位
+			//先判断是否有越界的
+			if(tempPoint.x>=TetrisCanvas.width){
+				return false;
+			}
+			//再判断是否有重复的
+			for(var j=0;j<AllBasciGraph.length;j++){
+				for(var z=0;z<AllBasciGraph[j].rectArray.length;z++){
+					if(tempPoint.y==AllBasciGraph[j].rectArray[z].point.y&&tempPoint.x==AllBasciGraph[j].rectArray[z].point.x){
+						return false;
+					}
 				}
 			}
 		}
+		return true;
 	}
-	return true;
-}
-//判断当前正在移动图形是否可以变换
-function checkChange(){
-	NowBasicGraph.changeStatus();//先变换，再查看是否有冲突（虽然变化的原则基本上可以保证越界冲突，但是多检查更好）
-	//打印信息
-	/*console.log(NowBasicGraph.rectArray.length+" : #######################");
-	for(var i=0;i<NowBasicGraph.rectArray.length;i++){
-		console.log(NowBasicGraph.rectArray[i].point.x+" "+NowBasicGraph.rectArray[i].point.y);
-	}
-	console.log(AllBasciGraph.length+" :");
-	for(var j=0;j<AllBasciGraph.length;j++){
-			for(var z=0;z<AllBasciGraph[j].rectArray.length;z++){
-				console.log(AllBasciGraph[j].rectArray[z].point.x+" "+AllBasciGraph[j].rectArray[z].point.y);
-			}
-	}*/
-	for(var i=0;i<NowBasicGraph.rectArray.length;i++){
-		var tempPoint=new Point(NowBasicGraph.rectArray[i].point.x,NowBasicGraph.rectArray[i].point.y);
-		//先判断是否有右越界的
-		if(tempPoint.x>=TetrisCanvas.width){
-			return false;
+	//判断当前正在移动图形是否可以变换
+	function checkChange(){
+		NowBasicGraph.changeStatus();//先变换，再查看是否有冲突（虽然变化的原则基本上可以保证越界冲突，但是多检查更好）
+		//打印信息
+		/*console.log(NowBasicGraph.rectArray.length+" : #######################");
+		for(var i=0;i<NowBasicGraph.rectArray.length;i++){
+			console.log(NowBasicGraph.rectArray[i].point.x+" "+NowBasicGraph.rectArray[i].point.y);
 		}
-		//先判断是否有左越界的
-		if(tempPoint.x<0){
-			return false;
-		}
-		//再判断是否有重复的
+		console.log(AllBasciGraph.length+" :");
 		for(var j=0;j<AllBasciGraph.length;j++){
-			for(var z=0;z<AllBasciGraph[j].rectArray.length;z++){
-				if(tempPoint.y==AllBasciGraph[j].rectArray[z].point.y&&tempPoint.x==AllBasciGraph[j].rectArray[z].point.x){
-					return false;
+				for(var z=0;z<AllBasciGraph[j].rectArray.length;z++){
+					console.log(AllBasciGraph[j].rectArray[z].point.x+" "+AllBasciGraph[j].rectArray[z].point.y);
+				}
+		}*/
+		for(var i=0;i<NowBasicGraph.rectArray.length;i++){
+			var tempPoint=new Point(NowBasicGraph.rectArray[i].point.x,NowBasicGraph.rectArray[i].point.y);
+			//先判断是否有右越界的
+			if(tempPoint.x>=TetrisCanvas.width){
+				return false;
+			}
+			//先判断是否有左越界的
+			if(tempPoint.x<0){
+				return false;
+			}
+			//再判断是否有重复的
+			for(var j=0;j<AllBasciGraph.length;j++){
+				for(var z=0;z<AllBasciGraph[j].rectArray.length;z++){
+					if(tempPoint.y==AllBasciGraph[j].rectArray[z].point.y&&tempPoint.x==AllBasciGraph[j].rectArray[z].point.x){
+						return false;
+					}
 				}
 			}
 		}
+		return true;
 	}
-	return true;
-}
 
-//点类
-function Point(x,y){
-	this.x=x;
-	this.y=y;
-}
-//矩形类
-function Rect(point,width,height){
-	this.point=new Point(point.x,point.y);
-	this.width=width;
-	this.height=height;
-}
-//俄罗斯方块的基本图形类
-function BasicGraph(rectArray,type,status,color){
-	this.rectArray=rectArray;
-	this.tempRectArray=rectArray;
-	this.type=type;
-	//共包括四种状态（'INIT'->'LEFT'->'DOWN'->'RIGHT'）
-	this.status=status;
-	this.color=color;
-	this.rollBack=function(){
-		this.rectArray=this.tempRectArray;
-		if(this.status=='INIT'){
-			this.status='RIGHT';
-		}else if(this.status=='LEFT'){
-			this.status='INIT';
-		}else if(this.status=='DOWN'){
-			this.status='LEFT';
-		}else if(this.status=='RIGHT'){
-			this.status='DOWN';
-		}
+	//点类
+	function Point(x,y){
+		this.x=x;
+		this.y=y;
 	}
-	//变化原则（最安全原则：即变化前不越界，变化后也尽量不越界，越界不可避免，也尽量考虑越界左边，然后再处理）	
-	this.changeStatus=function(){
-		//变化之前保存好当前的状态(让tempRectArray指向rectArray)，方便回滚
-		var tempArray=new Array();
-		for(var i=0;i<this.rectArray.length;i++){
-			var tempRect=new Rect(this.rectArray[i].point,this.rectArray[i].width,this.rectArray[i].height);
-			tempArray.push(tempRect);
+	//矩形类
+	function Rect(point,width,height){
+		this.point=new Point(point.x,point.y);
+		this.width=width;
+		this.height=height;
+	}
+	//俄罗斯方块的基本图形类
+	function BasicGraph(rectArray,type,status,color){
+		this.rectArray=rectArray;
+		this.tempRectArray=rectArray;
+		this.type=type;
+		//共包括四种状态（'INIT'->'LEFT'->'DOWN'->'RIGHT'）
+		this.status=status;
+		this.color=color;
+		this.rollBack=function(){
+			this.rectArray=this.tempRectArray;
+			if(this.status=='INIT'){
+				this.status='RIGHT';
+			}else if(this.status=='LEFT'){
+				this.status='INIT';
+			}else if(this.status=='DOWN'){
+				this.status='LEFT';
+			}else if(this.status=='RIGHT'){
+				this.status='DOWN';
+			}
 		}
-		this.tempRectArray=tempArray;
-		switch(this.type){
-			case 0:
-				if(this.status=='INIT'||this.status=='DOWN'){
-					this.rectArray[3].point.x=this.rectArray[0].point.x+3*BasicSize;
-					this.rectArray[3].point.y=this.rectArray[2].point.y-3*BasicSize;
-					this.rectArray[2].point.x=this.rectArray[3].point.x;
-					this.rectArray[2].point.y=this.rectArray[3].point.y+BasicSize;
-					this.rectArray[1].point.x=this.rectArray[2].point.x;
-					this.rectArray[1].point.y=this.rectArray[2].point.y+BasicSize;
-					this.rectArray[0].point.x=this.rectArray[1].point.x;
-					this.rectArray[0].point.y=this.rectArray[1].point.y+BasicSize;
+		//变化原则（最安全原则：即变化前不越界，变化后也尽量不越界，越界不可避免，也尽量考虑越界左边，然后再处理）	
+		this.changeStatus=function(){
+			//变化之前保存好当前的状态(让tempRectArray指向rectArray)，方便回滚
+			var tempArray=new Array();
+			for(var i=0;i<this.rectArray.length;i++){
+				var tempRect=new Rect(this.rectArray[i].point,this.rectArray[i].width,this.rectArray[i].height);
+				tempArray.push(tempRect);
+			}
+			this.tempRectArray=tempArray;
+			switch(this.type){
+				case 0:
+					if(this.status=='INIT'||this.status=='DOWN'){
+						this.rectArray[3].point.x=this.rectArray[0].point.x+3*BasicSize;
+						this.rectArray[3].point.y=this.rectArray[2].point.y-3*BasicSize;
+						this.rectArray[2].point.x=this.rectArray[3].point.x;
+						this.rectArray[2].point.y=this.rectArray[3].point.y+BasicSize;
+						this.rectArray[1].point.x=this.rectArray[2].point.x;
+						this.rectArray[1].point.y=this.rectArray[2].point.y+BasicSize;
+						this.rectArray[0].point.x=this.rectArray[1].point.x;
+						this.rectArray[0].point.y=this.rectArray[1].point.y+BasicSize;
+						if(this.status=='INIT'){
+							this.status='LEFT';
+						}else if(this.status=='DOWN'){
+							this.status='RIGHT';
+						}
+					}else if(this.status=='LEFT'||this.status=='RIGHT'){
+						this.rectArray[3].point.x=this.rectArray[3].point.x;
+						if(this.rectArray[3].point.x<3*BasicSize){
+							this.rectArray[3].point.x=3*BasicSize;
+						}
+						this.rectArray[3].point.y=this.rectArray[3].point.y+3*BasicSize;
+						this.rectArray[2].point.x=this.rectArray[3].point.x-BasicSize;
+						this.rectArray[2].point.y=this.rectArray[3].point.y;
+						this.rectArray[1].point.x=this.rectArray[2].point.x-BasicSize;
+						this.rectArray[1].point.y=this.rectArray[2].point.y;
+						this.rectArray[0].point.x=this.rectArray[1].point.x-BasicSize;
+						this.rectArray[0].point.y=this.rectArray[1].point.y;
+						if(this.status=='LEFT'){
+							this.status='DOWN';
+						}else if(this.status=='RIGHT'){
+							this.status='INIT';
+						}
+					}
+					break;
+				case 1:
 					if(this.status=='INIT'){
+						this.rectArray[3].point.x-=2*BasicSize;
+						this.rectArray[3].point.y=this.rectArray[3].point.y;
+						this.rectArray[2].point.x=this.rectArray[3].point.x;
+						this.rectArray[2].point.y=this.rectArray[3].point.y-BasicSize;
+						this.rectArray[1].point.x=this.rectArray[2].point.x;
+						this.rectArray[1].point.y=this.rectArray[2].point.y-BasicSize;
+						this.rectArray[0].point.x=this.rectArray[1].point.x+BasicSize;
+						this.rectArray[0].point.y=this.rectArray[1].point.y;
 						this.status='LEFT';
-					}else if(this.status=='DOWN'){
-						this.status='RIGHT';
-					}
-				}else if(this.status=='LEFT'||this.status=='RIGHT'){
-					this.rectArray[3].point.x=this.rectArray[3].point.x;
-					if(this.rectArray[3].point.x<3*BasicSize){
-						this.rectArray[3].point.x=3*BasicSize;
-					}
-					this.rectArray[3].point.y=this.rectArray[3].point.y+3*BasicSize;
-					this.rectArray[2].point.x=this.rectArray[3].point.x-BasicSize;
-					this.rectArray[2].point.y=this.rectArray[3].point.y;
-					this.rectArray[1].point.x=this.rectArray[2].point.x-BasicSize;
-					this.rectArray[1].point.y=this.rectArray[2].point.y;
-					this.rectArray[0].point.x=this.rectArray[1].point.x-BasicSize;
-					this.rectArray[0].point.y=this.rectArray[1].point.y;
-					if(this.status=='LEFT'){
+					}else if(this.status=='LEFT'){
+						this.rectArray[3].point.x-=BasicSize;
+						if(this.rectArray[3].point.x<0){
+							this.rectArray[3].point.x=0;
+						}
+						this.rectArray[3].point.y-=2*BasicSize;
+						this.rectArray[2].point.x=this.rectArray[3].point.x+BasicSize;
+						this.rectArray[2].point.y=this.rectArray[3].point.y;
+						this.rectArray[1].point.x=this.rectArray[2].point.x+BasicSize;
+						this.rectArray[1].point.y=this.rectArray[2].point.y;
+						this.rectArray[0].point.x=this.rectArray[1].point.x;
+						this.rectArray[0].point.y=this.rectArray[1].point.y+BasicSize;
 						this.status='DOWN';
+					}else if(this.status=='DOWN'){
+						this.rectArray[3].point.x+=2*BasicSize;
+						this.rectArray[3].point.y-=BasicSize;
+						this.rectArray[2].point.x=this.rectArray[3].point.x;
+						this.rectArray[2].point.y=this.rectArray[3].point.y+BasicSize;
+						this.rectArray[1].point.x=this.rectArray[2].point.x;
+						this.rectArray[1].point.y=this.rectArray[2].point.y+BasicSize;
+						this.rectArray[0].point.x=this.rectArray[1].point.x-BasicSize;
+						this.rectArray[0].point.y=this.rectArray[1].point.y;
+						this.status='RIGHT';
 					}else if(this.status=='RIGHT'){
+						this.rectArray[3].point.x=this.rectArray[3].point.x;
+						if(this.rectArray[3].point.x<2*BasicSize){
+							this.rectArray[3].point.x=2*BasicSize;
+						}
+						this.rectArray[3].point.y+=2*BasicSize;
+						this.rectArray[2].point.x=this.rectArray[3].point.x-BasicSize;
+						this.rectArray[2].point.y=this.rectArray[3].point.y;
+						this.rectArray[1].point.x=this.rectArray[2].point.x-BasicSize;
+						this.rectArray[1].point.y=this.rectArray[2].point.y;
+						this.rectArray[0].point.x=this.rectArray[1].point.x;
+						this.rectArray[0].point.y=this.rectArray[1].point.y-BasicSize;
 						this.status='INIT';
 					}
+					break;
+				case 2:
+					if(this.status=='INIT'){
+						this.rectArray[3].point.x=this.rectArray[3].point.x;
+						this.rectArray[3].point.y+=BasicSize;
+						this.rectArray[2].point.x=this.rectArray[3].point.x-BasicSize;
+						this.rectArray[2].point.y=this.rectArray[3].point.y;
+						this.rectArray[1].point.x=this.rectArray[2].point.x;
+						this.rectArray[1].point.y=this.rectArray[2].point.y-BasicSize;
+						this.rectArray[0].point.x=this.rectArray[1].point.x;
+						this.rectArray[0].point.y=this.rectArray[1].point.y-BasicSize;
+						this.status='LEFT';
+					}else if(this.status=='LEFT'){
+						this.rectArray[3].point.x=this.rectArray[3].point.x-2*BasicSize;
+						if(this.rectArray[3].point.x<0){
+							this.rectArray[3].point.x=0;
+						}
+						this.rectArray[3].point.y=this.rectArray[3].point.y;
+						this.rectArray[2].point.x=this.rectArray[3].point.x;
+						this.rectArray[2].point.y=this.rectArray[3].point.y-BasicSize;
+						this.rectArray[1].point.x=this.rectArray[2].point.x+BasicSize;
+						this.rectArray[1].point.y=this.rectArray[2].point.y;
+						this.rectArray[0].point.x=this.rectArray[1].point.x+BasicSize;
+						this.rectArray[0].point.y=this.rectArray[1].point.y;
+						this.status='DOWN';
+					}else if(this.status=='DOWN'){
+						this.rectArray[3].point.x=this.rectArray[3].point.x-BasicSize;
+						if(this.rectArray[3].point.x<0){
+							this.rectArray[3].point.x=0;
+						}
+						this.rectArray[3].point.y=this.rectArray[3].point.y-2*BasicSize;
+						this.rectArray[2].point.x=this.rectArray[3].point.x+BasicSize;
+						this.rectArray[2].point.y=this.rectArray[3].point.y;
+						this.rectArray[1].point.x=this.rectArray[2].point.x;
+						this.rectArray[1].point.y=this.rectArray[2].point.y+BasicSize;
+						this.rectArray[0].point.x=this.rectArray[1].point.x;
+						this.rectArray[0].point.y=this.rectArray[1].point.y+BasicSize;
+						this.status='RIGHT';
+					}else if(this.status=='RIGHT'){
+						this.rectArray[3].point.x=this.rectArray[3].point.x+BasicSize;
+						if(this.rectArray[3].point.x<2*BasicSize){
+							this.rectArray[3].point.x=2*BasicSize;
+						}
+						this.rectArray[3].point.y=this.rectArray[3].point.y+BasicSize;
+						this.rectArray[2].point.x=this.rectArray[3].point.x;
+						this.rectArray[2].point.y=this.rectArray[3].point.y+BasicSize;
+						this.rectArray[1].point.x=this.rectArray[2].point.x-BasicSize;
+						this.rectArray[1].point.y=this.rectArray[2].point.y;
+						this.rectArray[0].point.x=this.rectArray[1].point.x-BasicSize;
+						this.rectArray[0].point.y=this.rectArray[1].point.y;
+						this.status='INIT';
+					}
+					break;
+				case 3:
+					//noChange
+					break;
+				case 4:
+					if(this.status=='INIT'||this.status=='DOWN'){
+						this.rectArray[3].point.x=this.rectArray[3].point.x-BasicSize;
+						this.rectArray[3].point.y=this.rectArray[3].point.y+BasicSize;
+						this.rectArray[2].point.x=this.rectArray[3].point.x;
+						this.rectArray[2].point.y=this.rectArray[3].point.y-BasicSize;
+						this.rectArray[1].point.x=this.rectArray[2].point.x-BasicSize;
+						this.rectArray[1].point.y=this.rectArray[2].point.y;
+						this.rectArray[0].point.x=this.rectArray[1].point.x;
+						this.rectArray[0].point.y=this.rectArray[1].point.y-BasicSize;
+						if(this.status=='INIT'){
+							this.status='LEFT';
+						}else if(this.status=='DOWN'){
+							this.status='RIGHT';
+						}
+					}else if(this.status=='LEFT'||this.status=='RIGHT'){
+						this.rectArray[3].point.x=this.rectArray[3].point.x;
+						if(this.rectArray[3].point.x<2*BasicSize){
+							this.rectArray[3].point.x=2*BasicSize;
+						}
+						this.rectArray[3].point.y=this.rectArray[3].point.y-BasicSize;
+						this.rectArray[2].point.x=this.rectArray[3].point.x-BasicSize;
+						this.rectArray[2].point.y=this.rectArray[3].point.y;
+						this.rectArray[1].point.x=this.rectArray[2].point.x;
+						this.rectArray[1].point.y=this.rectArray[2].point.y+BasicSize;
+						this.rectArray[0].point.x=this.rectArray[1].point.x-BasicSize;
+						this.rectArray[0].point.y=this.rectArray[1].point.y;
+						if(this.status=='LEFT'){
+							this.status='DOWN';
+						}else if(this.status=='RIGHT'){
+							this.status='INIT';
+						}
+					}
+					break;
+				case 5:
+					if(this.status=='INIT'){
+						this.rectArray[3].point.x=this.rectArray[3].point.x+BasicSize;
+						this.rectArray[3].point.y=this.rectArray[3].point.y;
+						this.rectArray[2].point.x=this.rectArray[3].point.x-BasicSize;
+						this.rectArray[2].point.y=this.rectArray[3].point.y+BasicSize;
+						this.rectArray[1].point.x=this.rectArray[2].point.x;
+						this.rectArray[1].point.y=this.rectArray[2].point.y-BasicSize;
+						this.rectArray[0].point.x=this.rectArray[1].point.x;
+						this.rectArray[0].point.y=this.rectArray[1].point.y-BasicSize;
+						this.status='LEFT'
+					}else if(this.status=='LEFT'){
+						this.rectArray[3].point.x=this.rectArray[3].point.x-BasicSize;
+						if(this.rectArray[3].point.x<BasicSize){
+							this.rectArray[3].point.x=BasicSize
+						}
+						this.rectArray[3].point.y=this.rectArray[3].point.y+BasicSize;
+						this.rectArray[2].point.x=this.rectArray[3].point.x-BasicSize;
+						this.rectArray[2].point.y=this.rectArray[3].point.y-BasicSize;
+						this.rectArray[1].point.x=this.rectArray[2].point.x+BasicSize;
+						this.rectArray[1].point.y=this.rectArray[2].point.y;
+						this.rectArray[0].point.x=this.rectArray[1].point.x+BasicSize;
+						this.rectArray[0].point.y=this.rectArray[1].point.y;
+						this.status='DOWN';
+					}else if(this.status=='DOWN'){
+						this.rectArray[3].point.x=this.rectArray[3].point.x-BasicSize;
+						if(this.rectArray[3].point.x<0){
+							this.rectArray[3].point.x=0;
+						}
+						this.rectArray[3].point.y=this.rectArray[3].point.y-BasicSize;
+						this.rectArray[2].point.x=this.rectArray[3].point.x+BasicSize;
+						this.rectArray[2].point.y=this.rectArray[3].point.y-BasicSize;
+						this.rectArray[1].point.x=this.rectArray[2].point.x;
+						this.rectArray[1].point.y=this.rectArray[2].point.y+BasicSize;
+						this.rectArray[0].point.x=this.rectArray[1].point.x;
+						this.rectArray[0].point.y=this.rectArray[1].point.y+BasicSize;
+						this.status='RIGHT';
+					}else if(this.status=='RIGHT'){
+						this.rectArray[3].point.x=this.rectArray[3].point.x;
+						if(this.rectArray[3].point.x<BasicSize){
+							this.rectArray[3].point.x=BasicSize
+						}
+						this.rectArray[3].point.y=this.rectArray[3].point.y;
+						this.rectArray[2].point.x=this.rectArray[3].point.x+BasicSize;
+						this.rectArray[2].point.y=this.rectArray[3].point.y+BasicSize;
+						this.rectArray[1].point.x=this.rectArray[2].point.x-BasicSize;
+						this.rectArray[1].point.y=this.rectArray[2].point.y;
+						this.rectArray[0].point.x=this.rectArray[1].point.x-BasicSize;
+						this.rectArray[0].point.y=this.rectArray[1].point.y;
+						this.status='INIT';
+					}
+					break;
+				case 6:
+					if(this.status=='INIT'||this.status=='DOWN'){
+						this.rectArray[3].point.x=this.rectArray[3].point.x-2*BasicSize;
+						this.rectArray[3].point.y=this.rectArray[3].point.y;
+						this.rectArray[2].point.x=this.rectArray[3].point.x;
+						this.rectArray[2].point.y=this.rectArray[3].point.y-BasicSize;
+						this.rectArray[1].point.x=this.rectArray[2].point.x+BasicSize;
+						this.rectArray[1].point.y=this.rectArray[2].point.y;
+						this.rectArray[0].point.x=this.rectArray[1].point.x;
+						this.rectArray[0].point.y=this.rectArray[1].point.y-BasicSize;
+						if(this.status=='INIT'){
+							this.status='LEFT';
+						}else if(this.status=='DOWN'){
+							this.status='RIGHT';
+						}
+					}else if(this.status=='LEFT'||this.status=='RIGHT'){
+						this.rectArray[3].point.x=this.rectArray[3].point.x+BasicSize;
+						if(this.rectArray[3].point.x<2*BasicSize){
+							this.rectArray[3].point.x=2*BasicSize;
+						}
+						this.rectArray[3].point.y=this.rectArray[3].point.y;
+						this.rectArray[2].point.x=this.rectArray[3].point.x-BasicSize;
+						this.rectArray[2].point.y=this.rectArray[3].point.y;
+						this.rectArray[1].point.x=this.rectArray[2].point.x;
+						this.rectArray[1].point.y=this.rectArray[2].point.y-BasicSize;
+						this.rectArray[0].point.x=this.rectArray[1].point.x-BasicSize;
+						this.rectArray[0].point.y=this.rectArray[1].point.y;
+						if(this.status=='LEFT'){
+							this.status='DOWN';
+						}else if(this.status=='RIGHT'){
+							this.status='INIT';
+						}
+					}
+					break;
+				default:
+					break;
+			}
+		}
+	}
+
+	//画图
+	function drawBasic(){
+		if(!pauseGame){
+			//清除屏幕   
+			NextContext.clearRect(0, 0, NextCanvas.width, NextCanvas.height);  
+			TetrisContext.clearRect(0, 0, TetrisCanvas.width, TetrisCanvas.height); 
+			//下一次图形
+			if(NextBasicGraph!=null){
+				drawGraph(NextContext,NextBasicGraph)
+			}
+			//正在移动图形
+			if(NowBasicGraph!=null){
+				drawGraph(TetrisContext,NowBasicGraph)
+			}
+			//堆积图形
+			if(AllBasciGraph.length>0){
+				for(var i=0;i<AllBasciGraph.length;i++){
+					drawGraph(TetrisContext,AllBasciGraph[i]);
+				}
+			}
+		}
+	}
+	//画基本图形
+	function drawGraph(context,basicGraph){
+		var array=basicGraph.rectArray;
+		context.save();
+		context.beginPath();
+		context.fillStyle=basicGraph.color;
+		for(var i=0;i<array.length;i++){
+			context.fillRect(array[i].point.x,array[i].point.y,array[i].width,array[i].height);
+			//描边框
+			context.moveTo(array[i].point.x,array[i].point.y);
+			context.lineTo(array[i].point.x+array[i].width,array[i].point.y);
+			context.moveTo(array[i].point.x+array[i].width,array[i].point.y);
+			context.lineTo(array[i].point.x+array[i].width,array[i].point.y+array[i].height);
+			context.moveTo(array[i].point.x+array[i].width,array[i].point.y+array[i].height);
+			context.lineTo(array[i].point.x,array[i].point.y+array[i].height);
+			context.moveTo(array[i].point.x,array[i].point.y+array[i].height);
+			context.lineTo(array[i].point.x,array[i].point.y);
+		}
+		context.stroke();
+		context.closePath();
+		context.restore();
+	}
+
+	//以nextCanvas为基准随机生成七种基本图形
+	function randomRect(){
+		var rectArray=new Array();
+		var type=parseInt(Math.random()*7);
+		//获得随机颜色
+		var tempColor=LastColor;
+		while(tempColor==''||tempColor==LastColor){
+			tempColor=Colors[parseInt(Math.random()*Colors.length)];
+		}
+		switch(type){
+			case 0:
+				/*
+					OOOO
+				*/
+				var tempPoint=new Point(0,0);
+				var tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+				rectArray.push(tempRect);
+				for(var i=1;i<4;i++){
+					tempPoint.x=tempPoint.x+BasicSize;//向右移
+					tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+					rectArray.push(tempRect);
 				}
 				break;
 			case 1:
-				if(this.status=='INIT'){
-					this.rectArray[3].point.x-=2*BasicSize;
-					this.rectArray[3].point.y=this.rectArray[3].point.y;
-					this.rectArray[2].point.x=this.rectArray[3].point.x;
-					this.rectArray[2].point.y=this.rectArray[3].point.y-BasicSize;
-					this.rectArray[1].point.x=this.rectArray[2].point.x;
-					this.rectArray[1].point.y=this.rectArray[2].point.y-BasicSize;
-					this.rectArray[0].point.x=this.rectArray[1].point.x+BasicSize;
-					this.rectArray[0].point.y=this.rectArray[1].point.y;
-					this.status='LEFT';
-				}else if(this.status=='LEFT'){
-					this.rectArray[3].point.x-=BasicSize;
-					if(this.rectArray[3].point.x<0){
-						this.rectArray[3].point.x=0;
-					}
-					this.rectArray[3].point.y-=2*BasicSize;
-					this.rectArray[2].point.x=this.rectArray[3].point.x+BasicSize;
-					this.rectArray[2].point.y=this.rectArray[3].point.y;
-					this.rectArray[1].point.x=this.rectArray[2].point.x+BasicSize;
-					this.rectArray[1].point.y=this.rectArray[2].point.y;
-					this.rectArray[0].point.x=this.rectArray[1].point.x;
-					this.rectArray[0].point.y=this.rectArray[1].point.y+BasicSize;
-					this.status='DOWN';
-				}else if(this.status=='DOWN'){
-					this.rectArray[3].point.x+=2*BasicSize;
-					this.rectArray[3].point.y-=BasicSize;
-					this.rectArray[2].point.x=this.rectArray[3].point.x;
-					this.rectArray[2].point.y=this.rectArray[3].point.y+BasicSize;
-					this.rectArray[1].point.x=this.rectArray[2].point.x;
-					this.rectArray[1].point.y=this.rectArray[2].point.y+BasicSize;
-					this.rectArray[0].point.x=this.rectArray[1].point.x-BasicSize;
-					this.rectArray[0].point.y=this.rectArray[1].point.y;
-					this.status='RIGHT';
-				}else if(this.status=='RIGHT'){
-					this.rectArray[3].point.x=this.rectArray[3].point.x;
-					if(this.rectArray[3].point.x<2*BasicSize){
-						this.rectArray[3].point.x=2*BasicSize;
-					}
-					this.rectArray[3].point.y+=2*BasicSize;
-					this.rectArray[2].point.x=this.rectArray[3].point.x-BasicSize;
-					this.rectArray[2].point.y=this.rectArray[3].point.y;
-					this.rectArray[1].point.x=this.rectArray[2].point.x-BasicSize;
-					this.rectArray[1].point.y=this.rectArray[2].point.y;
-					this.rectArray[0].point.x=this.rectArray[1].point.x;
-					this.rectArray[0].point.y=this.rectArray[1].point.y-BasicSize;
-					this.status='INIT';
+				/*  O
+					OOO
+				*/
+				var tempPoint=new Point(0,0);
+				var tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+				rectArray.push(tempRect);
+				tempPoint.y=tempPoint.y+BasicSize;//向下移
+				tempPoint.x=tempPoint.x-BasicSize;
+				for(var i=1;i<4;i++){
+					tempPoint.x=tempPoint.x+BasicSize;//向右移
+					tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+					rectArray.push(tempRect);
 				}
 				break;
 			case 2:
-				if(this.status=='INIT'){
-					this.rectArray[3].point.x=this.rectArray[3].point.x;
-					this.rectArray[3].point.y+=BasicSize;
-					this.rectArray[2].point.x=this.rectArray[3].point.x-BasicSize;
-					this.rectArray[2].point.y=this.rectArray[3].point.y;
-					this.rectArray[1].point.x=this.rectArray[2].point.x;
-					this.rectArray[1].point.y=this.rectArray[2].point.y-BasicSize;
-					this.rectArray[0].point.x=this.rectArray[1].point.x;
-					this.rectArray[0].point.y=this.rectArray[1].point.y-BasicSize;
-					this.status='LEFT';
-				}else if(this.status=='LEFT'){
-					this.rectArray[3].point.x=this.rectArray[3].point.x-2*BasicSize;
-					if(this.rectArray[3].point.x<0){
-						this.rectArray[3].point.x=0;
-					}
-					this.rectArray[3].point.y=this.rectArray[3].point.y;
-					this.rectArray[2].point.x=this.rectArray[3].point.x;
-					this.rectArray[2].point.y=this.rectArray[3].point.y-BasicSize;
-					this.rectArray[1].point.x=this.rectArray[2].point.x+BasicSize;
-					this.rectArray[1].point.y=this.rectArray[2].point.y;
-					this.rectArray[0].point.x=this.rectArray[1].point.x+BasicSize;
-					this.rectArray[0].point.y=this.rectArray[1].point.y;
-					this.status='DOWN';
-				}else if(this.status=='DOWN'){
-					this.rectArray[3].point.x=this.rectArray[3].point.x-BasicSize;
-					if(this.rectArray[3].point.x<0){
-						this.rectArray[3].point.x=0;
-					}
-					this.rectArray[3].point.y=this.rectArray[3].point.y-2*BasicSize;
-					this.rectArray[2].point.x=this.rectArray[3].point.x+BasicSize;
-					this.rectArray[2].point.y=this.rectArray[3].point.y;
-					this.rectArray[1].point.x=this.rectArray[2].point.x;
-					this.rectArray[1].point.y=this.rectArray[2].point.y+BasicSize;
-					this.rectArray[0].point.x=this.rectArray[1].point.x;
-					this.rectArray[0].point.y=this.rectArray[1].point.y+BasicSize;
-					this.status='RIGHT';
-				}else if(this.status=='RIGHT'){
-					this.rectArray[3].point.x=this.rectArray[3].point.x+BasicSize;
-					if(this.rectArray[3].point.x<2*BasicSize){
-						this.rectArray[3].point.x=2*BasicSize;
-					}
-					this.rectArray[3].point.y=this.rectArray[3].point.y+BasicSize;
-					this.rectArray[2].point.x=this.rectArray[3].point.x;
-					this.rectArray[2].point.y=this.rectArray[3].point.y+BasicSize;
-					this.rectArray[1].point.x=this.rectArray[2].point.x-BasicSize;
-					this.rectArray[1].point.y=this.rectArray[2].point.y;
-					this.rectArray[0].point.x=this.rectArray[1].point.x-BasicSize;
-					this.rectArray[0].point.y=this.rectArray[1].point.y;
-					this.status='INIT';
+				/*    O
+					OOO
+				*/
+				var tempPoint=new Point(0,BasicSize);
+				var tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+				rectArray.push(tempRect);
+				for(var i=1;i<3;i++){
+					tempPoint.x=tempPoint.x+BasicSize;//向右移
+					tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+					rectArray.push(tempRect);
 				}
+				tempPoint.y=tempPoint.y-BasicSize;//向上移
+				tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+				rectArray.push(tempRect);
 				break;
 			case 3:
-				//noChange
+				/*  OO
+					OO
+				*/
+				var tempPoint=new Point(0,0);
+				var tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+				rectArray.push(tempRect);
+				tempPoint.x=tempPoint.x+BasicSize;//向右移
+				tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+				rectArray.push(tempRect);
+				tempPoint.y=tempPoint.y+BasicSize;//向下移
+				tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+				rectArray.push(tempRect);
+				tempPoint.x=tempPoint.x-BasicSize;//向左移
+				tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+				rectArray.push(tempRect);
 				break;
 			case 4:
-				if(this.status=='INIT'||this.status=='DOWN'){
-					this.rectArray[3].point.x=this.rectArray[3].point.x-BasicSize;
-					this.rectArray[3].point.y=this.rectArray[3].point.y+BasicSize;
-					this.rectArray[2].point.x=this.rectArray[3].point.x;
-					this.rectArray[2].point.y=this.rectArray[3].point.y-BasicSize;
-					this.rectArray[1].point.x=this.rectArray[2].point.x-BasicSize;
-					this.rectArray[1].point.y=this.rectArray[2].point.y;
-					this.rectArray[0].point.x=this.rectArray[1].point.x;
-					this.rectArray[0].point.y=this.rectArray[1].point.y-BasicSize;
-					if(this.status=='INIT'){
-						this.status='LEFT';
-					}else if(this.status=='DOWN'){
-						this.status='RIGHT';
-					}
-				}else if(this.status=='LEFT'||this.status=='RIGHT'){
-					this.rectArray[3].point.x=this.rectArray[3].point.x;
-					if(this.rectArray[3].point.x<2*BasicSize){
-						this.rectArray[3].point.x=2*BasicSize;
-					}
-					this.rectArray[3].point.y=this.rectArray[3].point.y-BasicSize;
-					this.rectArray[2].point.x=this.rectArray[3].point.x-BasicSize;
-					this.rectArray[2].point.y=this.rectArray[3].point.y;
-					this.rectArray[1].point.x=this.rectArray[2].point.x;
-					this.rectArray[1].point.y=this.rectArray[2].point.y+BasicSize;
-					this.rectArray[0].point.x=this.rectArray[1].point.x-BasicSize;
-					this.rectArray[0].point.y=this.rectArray[1].point.y;
-					if(this.status=='LEFT'){
-						this.status='DOWN';
-					}else if(this.status=='RIGHT'){
-						this.status='INIT';
-					}
-				}
+				/*   OO
+					OO
+				*/
+				var tempPoint=new Point(0,BasicSize);
+				var tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+				rectArray.push(tempRect);
+				tempPoint.x=tempPoint.x+BasicSize;//向右移
+				tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+				rectArray.push(tempRect);
+				tempPoint.y=tempPoint.y-BasicSize;//向上移
+				tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+				rectArray.push(tempRect);
+				tempPoint.x=tempPoint.x+BasicSize;//向右移
+				tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+				rectArray.push(tempRect);
 				break;
 			case 5:
-				if(this.status=='INIT'){
-					this.rectArray[3].point.x=this.rectArray[3].point.x+BasicSize;
-					this.rectArray[3].point.y=this.rectArray[3].point.y;
-					this.rectArray[2].point.x=this.rectArray[3].point.x-BasicSize;
-					this.rectArray[2].point.y=this.rectArray[3].point.y+BasicSize;
-					this.rectArray[1].point.x=this.rectArray[2].point.x;
-					this.rectArray[1].point.y=this.rectArray[2].point.y-BasicSize;
-					this.rectArray[0].point.x=this.rectArray[1].point.x;
-					this.rectArray[0].point.y=this.rectArray[1].point.y-BasicSize;
-					this.status='LEFT'
-				}else if(this.status=='LEFT'){
-					this.rectArray[3].point.x=this.rectArray[3].point.x-BasicSize;
-					if(this.rectArray[3].point.x<BasicSize){
-						this.rectArray[3].point.x=BasicSize
-					}
-					this.rectArray[3].point.y=this.rectArray[3].point.y+BasicSize;
-					this.rectArray[2].point.x=this.rectArray[3].point.x-BasicSize;
-					this.rectArray[2].point.y=this.rectArray[3].point.y-BasicSize;
-					this.rectArray[1].point.x=this.rectArray[2].point.x+BasicSize;
-					this.rectArray[1].point.y=this.rectArray[2].point.y;
-					this.rectArray[0].point.x=this.rectArray[1].point.x+BasicSize;
-					this.rectArray[0].point.y=this.rectArray[1].point.y;
-					this.status='DOWN';
-				}else if(this.status=='DOWN'){
-					this.rectArray[3].point.x=this.rectArray[3].point.x-BasicSize;
-					if(this.rectArray[3].point.x<0){
-						this.rectArray[3].point.x=0;
-					}
-					this.rectArray[3].point.y=this.rectArray[3].point.y-BasicSize;
-					this.rectArray[2].point.x=this.rectArray[3].point.x+BasicSize;
-					this.rectArray[2].point.y=this.rectArray[3].point.y-BasicSize;
-					this.rectArray[1].point.x=this.rectArray[2].point.x;
-					this.rectArray[1].point.y=this.rectArray[2].point.y+BasicSize;
-					this.rectArray[0].point.x=this.rectArray[1].point.x;
-					this.rectArray[0].point.y=this.rectArray[1].point.y+BasicSize;
-					this.status='RIGHT';
-				}else if(this.status=='RIGHT'){
-					this.rectArray[3].point.x=this.rectArray[3].point.x;
-					if(this.rectArray[3].point.x<BasicSize){
-						this.rectArray[3].point.x=BasicSize
-					}
-					this.rectArray[3].point.y=this.rectArray[3].point.y;
-					this.rectArray[2].point.x=this.rectArray[3].point.x+BasicSize;
-					this.rectArray[2].point.y=this.rectArray[3].point.y+BasicSize;
-					this.rectArray[1].point.x=this.rectArray[2].point.x-BasicSize;
-					this.rectArray[1].point.y=this.rectArray[2].point.y;
-					this.rectArray[0].point.x=this.rectArray[1].point.x-BasicSize;
-					this.rectArray[0].point.y=this.rectArray[1].point.y;
-					this.status='INIT';
+				/*   O
+					OOO
+				*/
+				var tempPoint=new Point(0,BasicSize);
+				var tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+				rectArray.push(tempRect);
+				for(var i=1;i<3;i++){
+					tempPoint.x=tempPoint.x+BasicSize;//向右移
+					tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+					rectArray.push(tempRect);
 				}
+				tempPoint.x=tempPoint.x-BasicSize;//向左移
+				tempPoint.y=tempPoint.y-BasicSize;//向上移
+				tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+				rectArray.push(tempRect);
 				break;
 			case 6:
-				if(this.status=='INIT'||this.status=='DOWN'){
-					this.rectArray[3].point.x=this.rectArray[3].point.x-2*BasicSize;
-					this.rectArray[3].point.y=this.rectArray[3].point.y;
-					this.rectArray[2].point.x=this.rectArray[3].point.x;
-					this.rectArray[2].point.y=this.rectArray[3].point.y-BasicSize;
-					this.rectArray[1].point.x=this.rectArray[2].point.x+BasicSize;
-					this.rectArray[1].point.y=this.rectArray[2].point.y;
-					this.rectArray[0].point.x=this.rectArray[1].point.x;
-					this.rectArray[0].point.y=this.rectArray[1].point.y-BasicSize;
-					if(this.status=='INIT'){
-						this.status='LEFT';
-					}else if(this.status=='DOWN'){
-						this.status='RIGHT';
-					}
-				}else if(this.status=='LEFT'||this.status=='RIGHT'){
-					this.rectArray[3].point.x=this.rectArray[3].point.x+BasicSize;
-					if(this.rectArray[3].point.x<2*BasicSize){
-						this.rectArray[3].point.x=2*BasicSize;
-					}
-					this.rectArray[3].point.y=this.rectArray[3].point.y;
-					this.rectArray[2].point.x=this.rectArray[3].point.x-BasicSize;
-					this.rectArray[2].point.y=this.rectArray[3].point.y;
-					this.rectArray[1].point.x=this.rectArray[2].point.x;
-					this.rectArray[1].point.y=this.rectArray[2].point.y-BasicSize;
-					this.rectArray[0].point.x=this.rectArray[1].point.x-BasicSize;
-					this.rectArray[0].point.y=this.rectArray[1].point.y;
-					if(this.status=='LEFT'){
-						this.status='DOWN';
-					}else if(this.status=='RIGHT'){
-						this.status='INIT';
-					}
-				}
+				/*  OO
+					 OO
+				*/
+				var tempPoint=new Point(0,0);
+				var tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+				rectArray.push(tempRect);
+				tempPoint.x=tempPoint.x+BasicSize;//向右移
+				tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+				rectArray.push(tempRect);
+				tempPoint.y=tempPoint.y+BasicSize;//向下移
+				tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+				rectArray.push(tempRect);
+				tempPoint.x=tempPoint.x+BasicSize;//向右移
+				tempRect=new Rect(tempPoint,BasicSize,BasicSize);
+				rectArray.push(tempRect);
 				break;
 			default:
 				break;
 		}
+		LastColor=tempColor;
+		return new BasicGraph(rectArray,type,'INIT',tempColor);;
 	}
-}
-
-//画图
-function drawBasic(){
-	if(!pauseGame){
-		//清除屏幕   
-		NextContext.clearRect(0, 0, NextCanvas.width, NextCanvas.height);  
-		TetrisContext.clearRect(0, 0, TetrisCanvas.width, TetrisCanvas.height); 
-		//下一次图形
-		if(NextBasicGraph!=null){
-			drawGraph(NextContext,NextBasicGraph)
-		}
-		//正在移动图形
-		if(NowBasicGraph!=null){
-			drawGraph(TetrisContext,NowBasicGraph)
-		}
-		//堆积图形
-		if(AllBasciGraph.length>0){
-			for(var i=0;i<AllBasciGraph.length;i++){
-				drawGraph(TetrisContext,AllBasciGraph[i]);
-			}
-		}
-	}
-}
-//画基本图形
-function drawGraph(context,basicGraph){
-	var array=basicGraph.rectArray;
-	context.save();
-	context.beginPath();
-	context.fillStyle=basicGraph.color;
-	for(var i=0;i<array.length;i++){
-		context.fillRect(array[i].point.x,array[i].point.y,array[i].width,array[i].height);
-		//描边框
-		context.moveTo(array[i].point.x,array[i].point.y);
-		context.lineTo(array[i].point.x+array[i].width,array[i].point.y);
-		context.moveTo(array[i].point.x+array[i].width,array[i].point.y);
-		context.lineTo(array[i].point.x+array[i].width,array[i].point.y+array[i].height);
-		context.moveTo(array[i].point.x+array[i].width,array[i].point.y+array[i].height);
-		context.lineTo(array[i].point.x,array[i].point.y+array[i].height);
-		context.moveTo(array[i].point.x,array[i].point.y+array[i].height);
-		context.lineTo(array[i].point.x,array[i].point.y);
-	}
-	context.stroke();
-	context.closePath();
-	context.restore();
-}
-
-//以nextCanvas为基准随机生成七种基本图形
-function randomRect(){
-	var rectArray=new Array();
-	var type=parseInt(Math.random()*7);
-	//获得随机颜色
-	var tempColor=LastColor;
-	while(tempColor==''||tempColor==LastColor){
-		tempColor=Colors[parseInt(Math.random()*Colors.length)];
-	}
-	switch(type){
-		case 0:
-			/*
-				OOOO
-			*/
-			var tempPoint=new Point(0,0);
-			var tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-			rectArray.push(tempRect);
-			for(var i=1;i<4;i++){
-				tempPoint.x=tempPoint.x+BasicSize;//向右移
-				tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-				rectArray.push(tempRect);
-			}
-			break;
-		case 1:
-			/*  O
-				OOO
-			*/
-			var tempPoint=new Point(0,0);
-			var tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-			rectArray.push(tempRect);
-			tempPoint.y=tempPoint.y+BasicSize;//向下移
-			tempPoint.x=tempPoint.x-BasicSize;
-			for(var i=1;i<4;i++){
-				tempPoint.x=tempPoint.x+BasicSize;//向右移
-				tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-				rectArray.push(tempRect);
-			}
-			break;
-		case 2:
-			/*    O
-				OOO
-			*/
-			var tempPoint=new Point(0,BasicSize);
-			var tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-			rectArray.push(tempRect);
-			for(var i=1;i<3;i++){
-				tempPoint.x=tempPoint.x+BasicSize;//向右移
-				tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-				rectArray.push(tempRect);
-			}
-			tempPoint.y=tempPoint.y-BasicSize;//向上移
-			tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-			rectArray.push(tempRect);
-			break;
-		case 3:
-			/*  OO
-				OO
-			*/
-			var tempPoint=new Point(0,0);
-			var tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-			rectArray.push(tempRect);
-			tempPoint.x=tempPoint.x+BasicSize;//向右移
-			tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-			rectArray.push(tempRect);
-			tempPoint.y=tempPoint.y+BasicSize;//向下移
-			tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-			rectArray.push(tempRect);
-			tempPoint.x=tempPoint.x-BasicSize;//向左移
-			tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-			rectArray.push(tempRect);
-			break;
-		case 4:
-			/*   OO
-				OO
-			*/
-			var tempPoint=new Point(0,BasicSize);
-			var tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-			rectArray.push(tempRect);
-			tempPoint.x=tempPoint.x+BasicSize;//向右移
-			tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-			rectArray.push(tempRect);
-			tempPoint.y=tempPoint.y-BasicSize;//向上移
-			tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-			rectArray.push(tempRect);
-			tempPoint.x=tempPoint.x+BasicSize;//向右移
-			tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-			rectArray.push(tempRect);
-			break;
-		case 5:
-			/*   O
-				OOO
-			*/
-			var tempPoint=new Point(0,BasicSize);
-			var tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-			rectArray.push(tempRect);
-			for(var i=1;i<3;i++){
-				tempPoint.x=tempPoint.x+BasicSize;//向右移
-				tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-				rectArray.push(tempRect);
-			}
-			tempPoint.x=tempPoint.x-BasicSize;//向左移
-			tempPoint.y=tempPoint.y-BasicSize;//向上移
-			tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-			rectArray.push(tempRect);
-			break;
-		case 6:
-			/*  OO
-				 OO
-			*/
-			var tempPoint=new Point(0,0);
-			var tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-			rectArray.push(tempRect);
-			tempPoint.x=tempPoint.x+BasicSize;//向右移
-			tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-			rectArray.push(tempRect);
-			tempPoint.y=tempPoint.y+BasicSize;//向下移
-			tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-			rectArray.push(tempRect);
-			tempPoint.x=tempPoint.x+BasicSize;//向右移
-			tempRect=new Rect(tempPoint,BasicSize,BasicSize);
-			rectArray.push(tempRect);
-			break;
-		default:
-			break;
-	}
-	LastColor=tempColor;
-	return new BasicGraph(rectArray,type,'INIT',tempColor);;
-}
-</script>
-</head>
-<body>
-<!-- 游戏界面长10刻度，宽20刻度（默认约定） -->
-<canvas id="tetrisCanvas" style="position:absolute;left:30px;top:30px;border:1px solid" width="300px" height='600px'></canvas>
-<div style="position:absolute;left:350px;top:30px;width:200px;height:410px;border:1px solid">
-<table>
-	<tr><td>信息面板</td></tr>
-	<tr><td>Score:</td></tr>
-	<tr><td><input id="score" type="text"></td></tr>
-	<tr><td>Times:</td></tr>
-	<tr><td><input id="times" type="text"></td></tr>
-	<tr><td>Next:</td></tr>
-	<tr><td><canvas id="nextCanvas" style="border:1px solid" width="192px" height='100px'></canvas></td></tr>
-	<tr><td><input id="startGame" type="button" value="StartGame"></td></tr>
-	<tr><td><input id="pauseGame" type="button" value="PauseGame"></td></tr>
-	<tr><td><input id="loadGame" type="button" value="LoadGame:"></td></tr>
-	<tr><td><input id="gameDataFile" type="file"/></td></tr>
-	<tr><td><input id="saveGame" type="button" value="SaveGame"></td></tr>
-</table>
-</div>
-<div style="position:absolute;left:350px;top:460px;width:200px;height:100px;border:1px solid">
-<table>
-	<tr><td>控制面板</td><td></td></tr>
-	<tr><td><input id="leftC" type="button" value="Left"></td><td><input id="rightC" type="button" value="Right"></td></tr>
-	<tr><td><input id="upC" type="button" value="Up"></td><td><input id="downC" type="button" value="Down"></td></tr>
-</table>
-</div>
+	</script>
 </body>
 </html>
